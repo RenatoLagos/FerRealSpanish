@@ -1,12 +1,59 @@
 ---
-import Hero from '@components/Hero.astro';
-import Layout from '@layouts/Layout.astro';
-import '@styles/global.css';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from '../layouts/Layout.astro';
+import Hero from '../components/Hero.astro';
+import Button from '../components/ui/button.astro';
 ---
 
-<Layout>
-	<Hero />
+<Layout title="FerRealSpanish - Learn Spanish Online">
+	<Hero 
+		title="Learn Spanish the Real Way"
+		subtitle="Connect with native speakers and immerse yourself in authentic Spanish language and culture"
+	/>
+	
+	<section class="py-16 bg-card">
+		<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+			<div class="text-center mb-12">
+				<h2 class="text-3xl font-bold mb-4">Why Choose <span class="text-warm-orange">FerReal</span>Spanish?</h2>
+				<p class="text-muted-foreground max-w-2xl mx-auto">Our unique approach focuses on conversational fluency, cultural immersion, and personalized learning experiences.</p>
+			</div>
+			
+			<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+				<div class="bg-background p-6 rounded-lg shadow-sm hover-lift">
+					<div class="text-primary mb-4">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M12 6.042A8.967 8.967 0 006 3.75c-1.052 0-2.062.18-3 .512v14.25A8.987 8.987 0 016 18c2.305 0 4.408.867 6 2.292m0-14.25a8.966 8.966 0 016-2.292c1.052 0 2.062.18 3 .512v14.25A8.987 8.987 0 0018 18a8.967 8.967 0 00-6 2.292m0-14.25v14.25" />
+						</svg>
+					</div>
+					<h3 class="text-xl font-bold mb-2">Native Teachers</h3>
+					<p class="text-muted-foreground">Learn from experienced native Spanish speakers who understand the nuances of the language.</p>
+				</div>
+				
+				<div class="bg-background p-6 rounded-lg shadow-sm hover-lift">
+					<div class="text-primary mb-4">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 006 16.5h2.25M3.75 3h-1.5m1.5 0h16.5m0 0h1.5m-1.5 0v11.25A2.25 2.25 0 0118 16.5h-2.25m-7.5 0h7.5m-7.5 0l-1 3m8.5-3l1 3m0 0l.5 1.5m-.5-1.5h-9.5m0 0l-.5 1.5m.75-9l3-3 2.148 2.148A12.061 12.061 0 0116.5 7.605" />
+						</svg>
+					</div>
+					<h3 class="text-xl font-bold mb-2">Custom Curriculum</h3>
+					<p class="text-muted-foreground">Personalized learning plans tailored to your goals, interests, and learning style.</p>
+				</div>
+				
+				<div class="bg-background p-6 rounded-lg shadow-sm hover-lift">
+					<div class="text-primary mb-4">
+						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
+							<path stroke-linecap="round" stroke-linejoin="round" d="M20.25 8.511c.884.284 1.5 1.128 1.5 2.097v4.286c0 1.136-.847 2.1-1.98 2.193-.34.027-.68.052-1.02.072v3.091l-3-3c-1.354 0-2.694-.055-4.02-.163a2.115 2.115 0 01-.825-.242m9.345-8.334a2.126 2.126 0 00-.476-.095 48.64 48.64 0 00-8.048 0c-1.131.094-1.976 1.057-1.976 2.192v4.286c0 .837.46 1.58 1.155 1.951m9.345-8.334V6.637c0-1.621-1.152-3.026-2.76-3.235A48.455 48.455 0 0011.25 3c-2.115 0-4.198.137-6.24.402-1.608.209-2.76 1.614-2.76 3.235v6.226c0 1.621 1.152 3.026 2.76 3.235.577.075 1.157.14 1.74.194V21l4.155-4.155" />
+						</svg>
+					</div>
+					<h3 class="text-xl font-bold mb-2">Conversation Focus</h3>
+					<p class="text-muted-foreground">Develop real-world speaking skills through interactive conversation practice.</p>
+				</div>
+			</div>
+			
+			<div class="mt-12 text-center">
+				<Button href="/classes" variant="primary" size="lg">
+					Explore Our Classes
+				</Button>
+			</div>
+		</div>
+	</section>
 </Layout>
