@@ -1,0 +1,67 @@
+---
+// Button.astro - A versatile button component for FerRealSpanish
+export interface Props {
+  variant?: 'default' | 'destructive' | 'outline' | 'secondary' | 'ghost' | 'link' | 'spanish';
+  size?: 'default' | 'sm' | 'lg' | 'icon';
+  fullWidth?: boolean;
+  href?: string;
+  type?: 'button' | 'submit' | 'reset';
+  class?: string;
+  disabled?: boolean;
+}
+
+const {
+  variant = 'default',
+  size = 'default',
+  fullWidth = false,
+  href,
+  type = 'button',
+  class: className = '',
+  disabled = false,
+  ...rest
+} = Astro.props;
+
+// Base classes for all buttons
+const baseClasses = 'inline-flex items-center justify-center rounded-md text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-amber-500 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none';
+
+// Variant-specific classes
+const variantClasses = {
+  default: 'bg-amber-600 text-white hover:bg-amber-700',
+  destructive: 'bg-red-500 text-white hover:bg-red-600',
+  outline: 'border border-slate-200 bg-white hover:bg-slate-100 hover:text-amber-600',
+  secondary: 'bg-slate-100 text-slate-900 hover:bg-slate-200',
+  ghost: 'hover:bg-slate-100 hover:text-amber-600',
+  link: 'text-amber-600 underline-offset-4 hover:underline',
+  spanish: 'bg-red-600 text-white hover:bg-red-700',
+};
+
+// Size-specific classes
+const sizeClasses = {
+  default: 'h-10 py-2 px-4',
+  sm: 'h-8 px-3 text-xs',
+  lg: 'h-12 px-8 text-base',
+  icon: 'h-10 w-10',
+};
+
+// Combine all the classes
+const classes = [
+  baseClasses,
+  variantClasses[variant],
+  sizeClasses[size],
+  fullWidth ? 'w-full' : '',
+  className
+].join(' ');
+
+// Determine if we should render an anchor or a button
+const Tag = href ? 'a' : 'button';
+---
+
+{href ? (
+  <a href={href} class={classes} {...rest}>
+    <slot />
+  </a>
+) : (
+  <button type={type} class={classes} disabled={disabled} {...rest}>
+    <slot />
+  </button>
+)} 
