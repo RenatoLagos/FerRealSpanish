@@ -21,24 +21,22 @@ const {
 		<link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-		<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+		<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
 		<meta name="generator" content={Astro.generator} />
 		<title>{title}</title>
 	</head>
 	<body class="min-h-screen flex flex-col font-nunito">
-		<header class="fixed top-0 left-0 right-0 z-50 bg-[var(--background-primary)] shadow-sm">
+		<header class="fixed top-0 left-0 right-0 z-50 bg-[var(--background-primary)]">
 			<div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
 				<div class="flex justify-between h-16 items-center">
-					<div class="flex items-center">
+					<div class="flex items-center gap-2">
 						<a href="/" class="flex items-center">
-							<span class="text-2xl font-bold">Fer<span class="text-[var(--background-secondary)]">Real</span>Spanish</span>
+							<span class="text-2xl font-bold">Fer<span class="text-[var(--background-secondary)]">Real</span>Spanish 🦜</span>
 						</a>
 					</div>
 					<nav class="hidden md:flex space-x-8">
 						<a href="/" class="hover:text-[var(--button-primary)] font-bold">Home</a>
-						<a href="/classes" class="hover:text-[var(--button-primary)] font-bold">Classes</a>
-						<a href="/teachers" class="hover:text-[var(--button-primary)] font-bold">Teachers</a>
-						<a href="/resources" class="hover:text-[var(--button-primary)] font-bold">Resources</a>
+						<a href="/classes" class="hover:text-[var(--button-primary)] font-bold">Schedule</a>
 						<a href="/about" class="hover:text-[var(--button-primary)] font-bold">About</a>
 						<a href="/contact" class="hover:text-[var(--button-primary)] font-bold">Contact</a>
 					</nav>
