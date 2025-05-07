@@ -8,6 +8,7 @@ export interface Props {
   type?: 'button' | 'submit' | 'reset';
   class?: string;
   disabled?: boolean;
+  rounded?: boolean;
 }
 
 const {
@@ -18,14 +19,15 @@ const {
   type = 'button',
   class: className = '',
   disabled = false,
+  rounded = false,
 } = Astro.props;
 
 // Variant classes
 const variantClasses = {
-  primary: 'bg-primary text-primary-foreground hover:bg-primary/90',
-  secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/90',
-  accent: 'bg-accent text-accent-foreground hover:bg-accent/90',
-  outline: 'border-2 border-primary bg-transparent text-foreground hover:bg-muted'
+  primary: 'bg-[var(--button-primary)] text-white hover:bg-[var(--background-secondary)] font-bold text-[1.125rem]',
+  secondary: 'bg-[var(--button-secondary)] text-white hover:bg-[var(--background-secondary)]',
+  accent: 'bg-[var(--background-secondary)] text-[#333] hover:bg-[var(--background-secondary)/90]',
+  outline: 'border-2 border-[var(--button-primary)] bg-transparent text-[#333] hover:bg-[var(--background-secondary)/20]'
 };
 
 // Size classes
@@ -35,8 +37,9 @@ const sizeClasses = {
   lg: 'px-8 py-3 text-lg'
 };
 
-const baseClasses = 'inline-flex items-center justify-center rounded-md font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring hover-lift';
-const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${fullWidth ? 'w-full' : ''} ${className}`;
+const baseClasses = 'inline-flex items-center justify-center font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--button-primary)] hover:-translate-y-1';
+const roundedClass = rounded ? 'rounded-full' : 'rounded-md';
+const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${roundedClass} ${fullWidth ? 'w-full' : ''} ${className}`;
 
 // Determine if we should render an anchor or a button
 const Tag = href ? 'a' : 'button';

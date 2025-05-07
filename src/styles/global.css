@@ -1,89 +1,50 @@
-@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 @layer base {
-  :root {
-    --background: 36 31% 94%;
-    --foreground: 198 35% 20%;
+    :root {
+        --background-primary: #F6EDDB;
+        --background-secondary: #E4A632;        
+        --button-primary: #CE6B4A;
+        --button-secondary: #75BDA9;
+        --footer-background: #8B2D33;
+    }
+      
+    body {
+        background-color: var(--background-primary);
+        color: #333;
+    }
 
-    --card: 36 70% 97%;
-    --card-foreground: 198 35% 20%;
+    header {
+        background-color: var(--background-primary);
+        color: #333;
+    }
 
-    --popover: 36 31% 94%;
-    --popover-foreground: 198 35% 20%;
+    button.primary {
+        background-color: var(--button-primary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 
-    --primary: 17 89% 59%;
-    --primary-foreground: 0 0% 100%;
+    button.secondary {
+        background-color: var(--button-secondary);
+        color: white;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
 
-    --secondary: 174 48% 48%;
-    --secondary-foreground: 0 0% 100%;
-
-    --muted: 36 20% 90%;
-    --muted-foreground: 198 10% 40%;
-
-    --accent: 36 70% 85%;
-    --accent-foreground: 198 35% 20%;
-
-    --destructive: 0 84.2% 60.2%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 36 20% 85%;
-    --input: 36 20% 85%;
-    --ring: 17 89% 59%;
-
-    --radius: 1rem;
-  }
-
-  .dark {
-    --background: 198 35% 15%;
-    --foreground: 0 0% 98%;
-
-    --card: 198 35% 20%;
-    --card-foreground: 0 0% 98%;
-
-    --popover: 198 35% 15%;
-    --popover-foreground: 0 0% 98%;
-
-    --primary: 17 89% 59%;
-    --primary-foreground: 0 0% 100%;
-
-    --secondary: 174 48% 48%;
-    --secondary-foreground: 0 0% 98%;
-
-    --muted: 198 35% 25%;
-    --muted-foreground: 198 10% 70%;
-
-    --accent: 198 35% 25%;
-    --accent-foreground: 0 0% 98%;
-
-    --destructive: 0 62.8% 30.6%;
-    --destructive-foreground: 0 0% 98%;
-
-    --border: 198 35% 25%;
-    --input: 198 35% 25%;
-    --ring: 17 89% 59%;
-  }
-}
-
-@layer base {
-  body {
-    @apply bg-background text-foreground font-nunito;
-  }
-}
-
-/* Custom animations */
-@layer components {
-  .hover-lift {
-    @apply transition-transform duration-300 hover:-translate-y-1;
-  }
-
-  .wave-bg {
-    background-image: url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' viewBox='0 0 1200 400' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath fill='%2340B3A2' fill-opacity='0.1' d='M0,192L48,202.7C96,213,192,235,288,224C384,213,480,171,576,165.3C672,160,768,192,864,197.3C960,203,1056,181,1152,165.3C1248,149,1344,139,1392,133.3L1440,128L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z'%3E%3C/path%3E%3C/svg%3E");
-    background-size: cover;
-    background-position: center bottom;
-    background-repeat: no-repeat;
-  }
+    footer {
+        background-color: var(--footer-background);
+        color: white;
+        padding: 20px;
+        text-align: center;
+    }
 }

@@ -1,4 +1,6 @@
 ---
+import Button from '../components/ui/button.astro';
+
 interface Props {
   title?: string;
   subtitle?: string;
@@ -10,25 +12,41 @@ const {
 } = Astro.props;
 ---
 
-<section class="relative py-20 md:py-28 bg-background wave-bg">
+<section class="relative py-20 md:py-28 bg-[var(--background-primary)]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="text-center md:text-left md:w-3/5">
-      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6 text-foreground">
+      <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
         {title}
-        <span class="text-warm-orange">.</span>
+        <span class="text-[var(--button-primary)]">.</span>
       </h1>
-      <p class="text-xl md:text-2xl mb-8 text-muted-foreground">
+      <p class="text-xl md:text-2xl mb-8 text-[#333]/80">
         {subtitle}
       </p>
       <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-        <a href="/classes" class="bg-primary hover-lift text-primary-foreground px-8 py-3 rounded-full font-bold text-lg inline-block">
+        <Button 
+          href="/classes" 
+          variant="primary" 
+          size="lg" 
+          rounded={true}
+        >
           Start Learning
-        </a>
-        <a href="/about" class="bg-accent hover-lift text-accent-foreground px-8 py-3 rounded-full font-bold text-lg inline-block">
+        </Button>
+        <Button 
+          href="/about" 
+          variant="secondary" 
+          size="md" 
+          rounded={true}
+        >
           Learn More
-        </a>
+        </Button>
       </div>
     </div>
   </div>
   <!-- Decorative wave background is applied via the wave-bg class -->
 </section>
+
+<style>
+  .wave-bg {
+    background-color: var(--background-secondary);
+  }
+</style>
