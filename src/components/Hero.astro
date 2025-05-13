@@ -7,8 +7,8 @@ interface Props {
 }
 
 const { 
-  title = "Learn Spanish the Real Way", 
-  subtitle = "Connect with native speakers and immerse yourself in the language and culture"
+  title = "Achieving your Dreams through ", 
+  subtitle = "Learn Spanish authentically through personalized classes, conversations with native speakers, and complete immersion in Hispanic culture. Develop fluency while exploring traditions, local expressions, and much more."
 } = Astro.props;
 ---
 
@@ -16,11 +16,11 @@ const {
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex flex-col md:flex-row items-center md:items-center gap-8">
       <div class="text-center md:text-left md:w-3/5">
-        <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
+        <h1 class="text-6xl font-satoshi font-extrabold mb-6 tracking-normal leading-tight title-with-breaks">
           {title}
-          <span class="text-[var(--button-primary)]">.</span>
+          <span class="text-[var(--button-secondary)] font-satoshi font-extrabold">Spanish</span>
         </h1>
-        <p class="text-xl md:text-xl mb-8 text-[#333]/80">
+        <p class="text-xl md:text-base font-semibold mb-8 text-black">
           {subtitle}
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
@@ -61,10 +61,14 @@ const {
     background-color: var(--background-secondary);
   }
 
+  .title-with-breaks {
+    white-space: pre-line;
+  }
+
   .fer-img {
     width: 100%;
     max-width: 330px;
-    margin-left: 160px;
+    margin-left: 145px;
     margin-right: 0px;
     border-radius: 20px;
     object-fit: cover;
