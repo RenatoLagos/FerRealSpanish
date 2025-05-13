@@ -9,6 +9,8 @@ export interface Props {
   class?: string;
   disabled?: boolean;
   rounded?: boolean;
+  outline?: boolean;
+  shadow?: boolean;
 }
 
 const {
@@ -20,6 +22,8 @@ const {
   class: className = '',
   disabled = false,
   rounded = false,
+  outline = false,
+  shadow = false,
 } = Astro.props;
 
 // Variant classes
@@ -39,7 +43,9 @@ const sizeClasses = {
 
 const baseClasses = 'inline-flex items-center justify-center font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--button-primary)] hover:-translate-y-1';
 const roundedClass = rounded ? 'rounded-full' : 'rounded-md';
-const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${roundedClass} ${fullWidth ? 'w-full' : ''} ${className}`;
+const outlineClass = outline ? 'border-2 border-[var(--button-primary)]' : '';
+const shadowClass = shadow ? 'shadow-[-7px_6px_0px_0px_#000000]' : '';
+const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${roundedClass} ${fullWidth ? 'w-full' : ''} ${className} ${outlineClass} ${shadowClass}`; 
 
 // Determine if we should render an anchor or a button
 const Tag = href ? 'a' : 'button';

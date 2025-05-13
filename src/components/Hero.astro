@@ -14,24 +14,16 @@ const {
 
 <section class="relative py-20 md:py-28 bg-[var(--background-primary)]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col md:flex-row items-center md:items-start gap-8">
+    <div class="flex flex-col md:flex-row items-center md:items-center gap-8">
       <div class="text-center md:text-left md:w-3/5">
         <h1 class="text-4xl md:text-5xl lg:text-6xl font-bold mb-6">
           {title}
           <span class="text-[var(--button-primary)]">.</span>
         </h1>
-        <p class="text-xl md:text-2xl mb-8 text-[#333]/80">
+        <p class="text-xl md:text-xl mb-8 text-[#333]/80">
           {subtitle}
         </p>
         <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
-          <Button 
-            href="/classes" 
-            variant="primary" 
-            size="lg" 
-            rounded={true}
-          >
-            Start Learning
-          </Button>
           <Button 
             href="/about" 
             variant="secondary" 
@@ -40,13 +32,22 @@ const {
           >
             Learn More
           </Button>
+          <Button 
+            href="/classes" 
+            variant="primary" 
+            size="lg" 
+            rounded={true}
+            shadow={true}
+          >
+            Book your first class
+          </Button>
         </div>
       </div>
       <div class="hidden md:block md:w-2/5 flex-shrink-0">
         <img 
           src="/Fer.jpeg" 
-          alt="Fernando, Spanish teacher" 
-          class="w-full max-w-xs mx-auto rounded-2xl shadow-lg object-cover" 
+          alt="Fernanda, Spanish teacher" 
+          class="fer-img"
           loading="lazy"
         />
       </div>
@@ -58,5 +59,15 @@ const {
 <style>
   .wave-bg {
     background-color: var(--background-secondary);
+  }
+
+  .fer-img {
+    width: 100%;
+    max-width: 330px;
+    margin-left: 160px;
+    margin-right: 0px;
+    border-radius: 20px;
+    object-fit: cover;
+    box-shadow: 12px 12px 0px 0px #000000;
   }
 </style>
