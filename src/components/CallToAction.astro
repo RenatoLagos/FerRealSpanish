@@ -3,22 +3,32 @@ import Button from './ui/button.astro';
 ---
 
 <section class="py-16 bg-[var(--background-secondary)]">
-  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-    <h2 class="text-3xl font-satoshi font-bold mb-4">Start Your Spanish Journey Today</h2>
-    
-    <p class="text-gray-700 max-w-2xl mx-auto mb-8">
-      Learn Spanish with our expert native tutors in a fun and engaging environment. Our personalized approach ensures you'll achieve your language goals efficiently.
-    </p>
-    
-    <div class="flex justify-center">
-      <Button 
-        variant="primary" 
-        size="lg" 
-        rounded={true}
-        shadow={true}
-      >
-        Get Started Now
-      </Button>
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex flex-col md:flex-row">
+      <!-- Contenido a la izquierda -->
+      <div class="md:w-3/5 text-left">
+        <h2 class="text-white text-5xl font-satoshi font-extrabold mb-4">Let's Talk!</h2>
+        
+        <p class="text-white text-lg font-satoshi font-semibold mb-8 max-w-2xl">
+          Curious if this is right for you? Schedule a free, no-pressure consultation and discover how our Spanish program can help you achieve your language goals.
+        </p>
+        
+        <div class="flex">
+          <Button 
+            variant="primary" 
+            size="lg" 
+            rounded={true}
+            shadow={true}
+          >
+            Book your first class - It's FREE!
+          </Button>
+        </div>
+      </div>
+      
+      <!-- Espacio para contenido a la derecha -->
+      <div class="md:w-2/5">
+        <!-- Aquí irá el contenido adicional -->
+      </div>
     </div>
   </div>
 </section>
