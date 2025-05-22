@@ -1,0 +1,297 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/ui/button.astro';
+---
+
+<Layout title="Schedule Your First Free Class - FerRealSpanish">
+  <!-- Header Banner -->
+  <div class="bg-[var(--background-secondary)] py-16">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-4xl md:text-5xl font-satoshi font-extrabold text-white mb-4">Schedule Your First Free Class</h1>
+      <p class="text-white/80 text-lg md:text-xl max-w-3xl mx-auto">
+        Select a date and time that works for you to begin your Spanish journey.
+      </p>
+    </div>
+  </div>
+
+  <!-- Calendar Selection -->
+  <div class="py-16 bg-[var(--background-primary)]">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Two Column Layout -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
+        <!-- Left Column: Calendar -->
+        <div class="bg-white rounded-lg p-6 shadow-lg border border-[var(--border)]">
+          <h2 class="text-2xl font-satoshi font-bold mb-6">Select a Date</h2>
+          
+          <!-- Calendar -->
+          <div id="calendar" class="calendar-container">
+            <!-- Calendar will be rendered here by the script -->
+          </div>
+        </div>
+        
+        <!-- Right Column: Available Times -->
+        <div class="bg-white rounded-lg p-6 shadow-lg border border-[var(--border)] sticky top-20">
+          <h2 class="text-2xl font-satoshi font-bold mb-6">Available Times</h2>
+          
+          <!-- Selected Date Display -->
+          <div id="selectedDate" class="text-lg font-satoshi mb-6 text-[var(--accent)]">
+            Please select a date from the calendar
+          </div>
+          
+          <!-- Available Time Slots -->
+          <div id="timeSlots" class="grid grid-cols-2 gap-3 mb-8">
+            <!-- Time slots will be populated by the script -->
+            <div class="text-center p-4 border border-gray-200 rounded-md text-gray-400">No date selected</div>
+          </div>
+          
+          <!-- Booking Form (minimal version) -->
+          <div id="bookingForm" class="hidden space-y-6 border-t border-gray-200 pt-6 mt-6">
+            <h3 class="text-xl font-satoshi font-bold">Complete Your Booking</h3>
+            
+            <div>
+              <label for="name" class="block text-gray-700 font-satoshi font-medium mb-2">Your Name</label>
+              <input 
+                type="text" 
+                id="name" 
+                name="name" 
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              />
+            </div>
+            
+            <div>
+              <label for="email" class="block text-gray-700 font-satoshi font-medium mb-2">Email Address</label>
+              <input 
+                type="email" 
+                id="email" 
+                name="email" 
+                required
+                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
+              />
+            </div>
+            
+            <div>
+              <Button 
+                type="button"
+                variant="primary"
+                size="lg"
+                fullWidth={true}
+                rounded={true}
+              >
+                <span id="confirmBooking">Confirm Booking</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    // Current date
+    const currentDate = new Date();
+    let currentMonth = currentDate.getMonth();
+    let currentYear = currentDate.getFullYear();
+    
+    // Elements
+    const calendarEl = document.getElementById('calendar');
+    const selectedDateEl = document.getElementById('selectedDate');
+    const timeSlotsEl = document.getElementById('timeSlots');
+    const bookingFormEl = document.getElementById('bookingForm');
+    const confirmBookingEl = document.getElementById('confirmBooking');
+    
+    // Render calendar
+    function renderCalendar(month, year) {
+      // Month names
+      const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+      
+      // Get first day of month
+      const firstDay = new Date(year, month, 1).getDay();
+      
+      // Get last day of month
+      const lastDate = new Date(year, month + 1, 0).getDate();
+      
+      // Calendar header
+      let calendarHTML = `
+        <div class="flex justify-between items-center mb-4">
+          <button id="prevMonth" class="p-2 hover:bg-gray-100 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+          <div class="text-xl font-bold">${monthNames[month]} ${year}</div>
+          <button id="nextMonth" class="p-2 hover:bg-gray-100 rounded-full">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        </div>
+      `;
+      
+      // Days of week
+      calendarHTML += `
+        <div class="grid grid-cols-7 gap-1 mb-2">
+          <div class="text-center font-medium">Su</div>
+          <div class="text-center font-medium">Mo</div>
+          <div class="text-center font-medium">Tu</div>
+          <div class="text-center font-medium">We</div>
+          <div class="text-center font-medium">Th</div>
+          <div class="text-center font-medium">Fr</div>
+          <div class="text-center font-medium">Sa</div>
+        </div>
+      `;
+      
+      // Calendar body
+      calendarHTML += '<div class="grid grid-cols-7 gap-1">';
+      
+      // Empty cells for days before first day of month
+      for (let i = 0; i < firstDay; i++) {
+        calendarHTML += '<div class="h-10 p-1"></div>';
+      }
+      
+      // Days of month
+      const today = new Date();
+      const todayDate = today.getDate();
+      const todayMonth = today.getMonth();
+      const todayYear = today.getFullYear();
+      
+      for (let day = 1; day <= lastDate; day++) {
+        const isToday = day === todayDate && month === todayMonth && year === todayYear;
+        const isPast = new Date(year, month, day) < new Date(todayYear, todayMonth, todayDate);
+        
+        if (isPast) {
+          // Past dates
+          calendarHTML += `<div class="h-10 p-1">
+            <div class="h-full flex items-center justify-center text-gray-400">${day}</div>
+          </div>`;
+        } else if (isToday) {
+          // Today
+          calendarHTML += `<div class="h-10 p-1">
+            <div class="h-full flex items-center justify-center rounded-full bg-[var(--accent)] text-white cursor-pointer date-btn" data-date="${year}-${month+1}-${day}">${day}</div>
+          </div>`;
+        } else {
+          // Future dates
+          calendarHTML += `<div class="h-10 p-1">
+            <div class="h-full flex items-center justify-center rounded-full hover:bg-[var(--accent-light)] cursor-pointer date-btn" data-date="${year}-${month+1}-${day}">${day}</div>
+          </div>`;
+        }
+      }
+      
+      calendarHTML += '</div>';
+      
+      // Update calendar
+      if (calendarEl) {
+        calendarEl.innerHTML = calendarHTML;
+        
+        // Event listeners for navigation
+        document.getElementById('prevMonth')?.addEventListener('click', () => {
+          if (month === 0) {
+            month = 11;
+            year--;
+          } else {
+            month--;
+          }
+          renderCalendar(month, year);
+        });
+        
+        document.getElementById('nextMonth')?.addEventListener('click', () => {
+          if (month === 11) {
+            month = 0;
+            year++;
+          } else {
+            month++;
+          }
+          renderCalendar(month, year);
+        });
+        
+        // Event listeners for date selection
+        document.querySelectorAll('.date-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            const dateStr = e.target.getAttribute('data-date');
+            selectDate(dateStr);
+          });
+        });
+      }
+    }
+    
+    // Select a date and show available times
+    function selectDate(dateStr) {
+      if (selectedDateEl && timeSlotsEl) {
+        // Format date for display
+        const [year, month, day] = dateStr.split('-');
+        const date = new Date(year, month-1, day);
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const formattedDate = date.toLocaleDateString('en-US', options);
+        
+        // Update selected date display
+        selectedDateEl.textContent = formattedDate;
+        
+        // Generate mock available times (this would be replaced by Google Calendar API data)
+        const mockTimeSlots = [
+          "9:00 AM", "10:00 AM", "11:00 AM", 
+          "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"
+        ];
+        
+        // Randomly make some slots unavailable for demo purposes
+        const availableSlots = mockTimeSlots.filter(() => Math.random() > 0.3);
+        
+        // Show time slots
+        if (availableSlots.length > 0) {
+          let slotsHTML = '';
+          availableSlots.forEach(time => {
+            slotsHTML += `
+              <button class="p-4 border border-[var(--accent-light)] rounded-md hover:bg-[var(--accent-light)] transition-colors time-btn" data-time="${time}">
+                ${time}
+              </button>
+            `;
+          });
+          timeSlotsEl.innerHTML = slotsHTML;
+          
+          // Event listeners for time selection
+          document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              // Remove active class from all buttons
+              document.querySelectorAll('.time-btn').forEach(b => {
+                b.classList.remove('bg-[var(--accent)]', 'text-white');
+              });
+              
+              // Add active class to clicked button
+              e.target.classList.add('bg-[var(--accent)]', 'text-white');
+              
+              // Show booking form
+              if (bookingFormEl) {
+                bookingFormEl.classList.remove('hidden');
+              }
+            });
+          });
+        } else {
+          timeSlotsEl.innerHTML = '<div class="col-span-2 text-center p-4 border border-gray-200 rounded-md">No available times for this date</div>';
+          
+          // Hide booking form
+          if (bookingFormEl) {
+            bookingFormEl.classList.add('hidden');
+          }
+        }
+      }
+    }
+    
+    // Initialize calendar
+    renderCalendar(currentMonth, currentYear);
+    
+    // Event listener for confirm booking button
+    confirmBookingEl?.addEventListener('click', () => {
+      // This would be replaced with actual booking logic and API call
+      alert('Booking functionality will be connected to Google Calendar API');
+    });
+  });
+</script>
+
+<style>
+  /* Additional styles */
+  .calendar-container {
+    user-select: none;
+  }
+</style> 

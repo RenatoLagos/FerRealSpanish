@@ -2,33 +2,124 @@
 import Button from './ui/button.astro';
 ---
 
-<section class="py-16 bg-[var(--background-secondary)]">
+<section id="contact-section" class="py-20 bg-[var(--background-secondary)]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <div class="flex flex-col md:flex-row">
+    <div class="flex flex-col md:flex-row gap-12 items-center">
       <!-- Contenido a la izquierda -->
-      <div class="md:w-3/5 text-left">
-        <h2 class="text-white text-5xl font-satoshi font-extrabold mb-4">Let's Talk!</h2>
+      <div class="md:w-3/5 text-left flex flex-col gap-8">
+        <div class="space-y-6">
+          <h2 class="text-white text-5xl font-satoshi font-extrabold">Let's Talk!</h2>
+          
+          <p class="text-white text-lg font-satoshi max-w-lg">
+            Curious if this is right for you? Schedule a free, no-pressure consultation and discover how our Spanish program can help you achieve your language goals.
+          </p>
+        </div>
         
-        <p class="text-white text-lg font-satoshi font-semibold mb-8 max-w-2xl">
-          Curious if this is right for you? Schedule a free, no-pressure consultation and discover how our Spanish program can help you achieve your language goals.
-        </p>
-        
-        <div class="flex">
+        <div>
           <Button 
             variant="primary" 
             size="lg" 
             rounded={true}
             shadow={true}
+            href="/schedule-class"
           >
             Book your first class - It's FREE!
           </Button>
         </div>
       </div>
       
-      <!-- Espacio para contenido a la derecha -->
-      <div class="md:w-2/5">
-        <!-- Aquí irá el contenido adicional -->
+      <!-- Formulario de contacto desplegable -->
+      <div class="md:w-2/5 w-full">
+        <h3 class="text-white text-lg font-satoshi mb-3 px-1">Or if you prefer, you can send us a message:</h3>
+        <div class="bg-[var(--background-secondary)] rounded-lg overflow-hidden border border-[var(--accent)] shadow-lg">
+          <button 
+            id="toggleForm" 
+            class="w-full flex items-center justify-between text-white font-satoshi font-bold text-xl py-4 px-6 bg-[var(--accent)] hover:bg-[var(--accent-dark)] transition-colors duration-300"
+          >
+            <span class="flex items-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75" />
+              </svg>
+              Contact Form
+            </span>
+            <svg id="formArrow" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6 transform transition-transform duration-300">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 8.25l-7.5 7.5-7.5-7.5" />
+            </svg>
+          </button>
+          
+          <div id="contactForm" class="hidden p-6">
+            <div class="mb-4">
+              <label for="firstName" class="block text-white font-satoshi mb-2">First Name</label>
+              <input
+                type="text"
+                id="firstName"
+                name="firstName"
+                class="w-full px-4 py-2 bg-[var(--background-primary)] border border-[var(--border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--accent)] text-white placeholder-gray-400"
+                required
+              />
+            </div>
+            
+            <div class="mb-4">
+              <label for="lastName" class="block text-white font-satoshi mb-2">Last Name</label>
+              <input
+                type="text"
+                id="lastName"
+                name="lastName"
+                class="w-full px-4 py-2 bg-[var(--background-primary)] border border-[var(--border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--accent)] text-white placeholder-gray-400"
+                required
+              />
+            </div>
+            
+            <div class="mb-4">
+              <label for="email" class="block text-white font-satoshi mb-2">Email</label>
+              <input
+                type="email"
+                id="email"
+                name="email"
+                class="w-full px-4 py-2 bg-[var(--background-primary)] border border-[var(--border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--accent)] text-white placeholder-gray-400"
+                required
+              />
+            </div>
+            
+            <div class="mb-6">
+              <label for="message" class="block text-white font-satoshi mb-2">Your Message</label>
+              <textarea
+                id="message"
+                name="message"
+                rows="4"
+                class="w-full px-4 py-2 bg-[var(--background-primary)] border border-[var(--border)] rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--accent)] text-white placeholder-gray-400"
+                required
+              ></textarea>
+            </div>
+            
+            <Button
+              type="submit"
+              variant="secondary"
+              size="lg"
+              rounded={true}
+              fullWidth={true}
+            >
+              Submit
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   </div>
 </section>
+
+<script>
+  // Script para controlar la visibilidad del formulario
+  document.addEventListener('DOMContentLoaded', () => {
+    const toggleBtn = document.getElementById('toggleForm');
+    const formContainer = document.getElementById('contactForm');
+    const arrow = document.getElementById('formArrow');
+    
+    if (toggleBtn && formContainer && arrow) {
+      toggleBtn.addEventListener('click', () => {
+        formContainer.classList.toggle('hidden');
+        arrow.classList.toggle('rotate-180');
+      });
+    }
+  });
+</script>
