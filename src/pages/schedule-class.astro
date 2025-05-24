@@ -103,7 +103,7 @@ import Button from '../components/ui/button.astro';
     const confirmBookingEl = document.getElementById('confirmBooking');
     
     // Render calendar
-    function renderCalendar(month, year) {
+    function renderCalendar(month: number, year: number) {
       // Month names
       const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
@@ -210,20 +210,22 @@ import Button from '../components/ui/button.astro';
         // Event listeners for date selection
         document.querySelectorAll('.date-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
-            const dateStr = e.target.getAttribute('data-date');
-            selectDate(dateStr);
+            const dateStr = (e.target as HTMLElement).getAttribute('data-date');
+            if (dateStr) {
+              selectDate(dateStr);
+            }
           });
         });
       }
     }
     
     // Select a date and show available times
-    function selectDate(dateStr) {
+    function selectDate(dateStr: string) {
       if (selectedDateEl && timeSlotsEl) {
         // Format date for display
         const [year, month, day] = dateStr.split('-');
-        const date = new Date(year, month-1, day);
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' } as const;
         const formattedDate = date.toLocaleDateString('en-US', options);
         
         // Update selected date display
@@ -259,7 +261,7 @@ import Button from '../components/ui/button.astro';
               });
               
               // Add active class to clicked button
-              e.target.classList.add('bg-[var(--accent)]', 'text-white');
+              (e.target as HTMLElement).classList.add('bg-[var(--accent)]', 'text-white');
               
               // Show booking form
               if (bookingFormEl) {
