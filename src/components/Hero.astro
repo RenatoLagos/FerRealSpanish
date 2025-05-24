@@ -7,18 +7,10 @@ interface Props {
 }
 
 const { 
-  title = "Achieving your Dreams through", 
+  title = "Learn Spanish,\u2003\u2003\u2003\u2003", 
   subtitle = "I help you learn Spanish authentically through personalized classes, conversation practice with a native speaker, and complete immersion. My approach helps you develop fluency while exploring travel tips, local expressions, and much more."
 } = Astro.props;
 ---
-<div class="svg-container">
-            <div class="text-[var(--button-secondary)] font-satoshi font-extrabold">Spanish</div>
-            <svg viewBox="0 0 300 100" preserveAspectRatio="none">
-              <ellipse cx="150" cy="55" rx="130" ry="40" fill="none" stroke="#75C2AE" stroke-width="1.2" transform="rotate(0 150 50)" />
-              <ellipse cx="150" cy="50" rx="130" ry="40" fill="none" stroke="#75C2AE" stroke-width="1.2" transform="rotate(-10 150 50)" />
-            </svg>
-          </div>
-
 
 <section class="relative py-20 md:py-28 bg-[var(--background-primary)]">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -26,6 +18,13 @@ const {
       <div class="text-center md:text-left md:w-3/5">
         <h1 class="text-6xl font-satoshi font-extrabold mb-6 tracking-normal leading-tight title-with-breaks">
           {title}
+          <div class="svg-container">
+            <div class="text-[var(--button-secondary)] font-satoshi font-extrabold">For Real</div>
+            <svg viewBox="0 0 300 100" preserveAspectRatio="none">
+              <ellipse cx="150" cy="50" rx="150" ry="40" fill="none" stroke="#75C2AE" stroke-width="1.2" transform="rotate(0 150 50)" />
+              <ellipse cx="150" cy="50" rx="150" ry="40" fill="none" stroke="#75C2AE" stroke-width="1.2" transform="rotate(-8 150 50)" />
+            </svg>
+          </div>
         </h1>
         <p class="text-lg font-semibold mb-8 text-black">
           {subtitle}
@@ -86,6 +85,7 @@ const {
 
   .svg-container {
     position: relative;
+    display: inline-block;
     padding-top: 0.5rem;
     padding-bottom: 0.5rem;
   }
@@ -93,9 +93,8 @@ const {
   .svg-container svg {
     position: absolute;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
+    left: -30px;
+    right: -30px;
     pointer-events: none;
   }
 </style>
