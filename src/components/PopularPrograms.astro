@@ -31,6 +31,35 @@ import Button from '../components/ui/button.astro';
         <div class="grid grid-cols-1 gap-8">
             <!-- Single row with 3 cards -->
             <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <!-- Travel Spanish Card -->
+                <div class="p-3.5 bg-white rounded-2xl shadow-[6px_6px_0px_0px_#000000] overflow-hidden transform transition hover:-translate-y-0.5 flex flex-col h-[360px]">
+                    <div class="p-0.5">
+                        <img src="/program-5.jpg" alt="Travel Spanish" class="w-full h-32 object-cover rounded-t-2xl">
+                    </div>
+                    <div class="px-3.5 pt-4 pb-2 flex flex-col flex-grow">
+                        <h3 class="text-base font-bold mb-3">Travel Spanish</h3>
+                        <p class="text-gray-600 text-xs mb-4 flex-grow">I'll guide you through practical travel phrases customized to your destination and personal interests in Latin American culture and traditions.</p>
+                        <div class="flex justify-between items-center mt-auto">
+                            <div class="flex items-center">
+                                <span class="bg-green-100 rounded-full w-2.5 h-2.5 flex items-center justify-center mr-1">
+                                    <span class="bg-green-500 rounded-full w-1.5 h-1.5"></span>
+                                </span>
+                                <span class="text-xs text-gray-500">6 classes</span>
+                            </div>
+                            <Button 
+                                href="/schedule-class"
+                                variant="primary" 
+                                size="sm" 
+                                textSize="xs"
+                                rounded={true}
+                                shadow={true}
+                            >
+                                Book Now
+                            </Button>
+                        </div>
+                    </div>
+                </div>
+                
                 <!-- Conversational Spanish Card -->
                 <div class="p-3.5 bg-white rounded-2xl shadow-[6px_6px_0px_0px_#000000] overflow-hidden transform transition hover:-translate-y-0.5 flex flex-col h-[360px]">
                     <div class="p-0.5">
@@ -46,9 +75,15 @@ import Button from '../components/ui/button.astro';
                                 </span>
                                 <span class="text-xs text-gray-500">8 classes</span>
                             </div>
-                            <button class="bg-[var(--button-primary)] text-white py-1 px-3 rounded-full text-xs font-bold hover:-translate-y-0.5 transition-transform">
+                            <Button 
+                            href="/about" 
+                            variant="secondary" 
+                            size="sm" 
+                            textSize="xs"
+                            rounded={true}
+                            >
                                 Learn More
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>
@@ -68,31 +103,15 @@ import Button from '../components/ui/button.astro';
                                 </span>
                                 <span class="text-xs text-gray-500">15 classes</span>
                             </div>
-                            <button class="bg-[var(--button-secondary)] text-white py-1 px-3 rounded-full text-xs font-bold hover:-translate-y-0.5 transition-transform">
+                            <Button 
+                            href="/about" 
+                            variant="secondary" 
+                            size="sm" 
+                            textSize="xs"
+                            rounded={true}
+                            >
                                 Learn More
-                            </button>
-                        </div>
-                    </div>
-                </div>
-                
-                <!-- Travel Spanish Card -->
-                <div class="p-3.5 bg-white rounded-2xl shadow-[6px_6px_0px_0px_#000000] overflow-hidden transform transition hover:-translate-y-0.5 flex flex-col h-[360px]">
-                    <div class="p-0.5">
-                        <img src="/program-5.jpg" alt="Travel Spanish" class="w-full h-32 object-cover rounded-t-2xl">
-                    </div>
-                    <div class="px-3.5 pt-4 pb-2 flex flex-col flex-grow">
-                        <h3 class="text-base font-bold mb-3">Travel Spanish</h3>
-                        <p class="text-gray-600 text-xs mb-4 flex-grow">I'll guide you through practical travel phrases customized to your destination and personal interests in Latin American culture and traditions.</p>
-                        <div class="flex justify-between items-center mt-auto">
-                            <div class="flex items-center">
-                                <span class="bg-green-100 rounded-full w-2.5 h-2.5 flex items-center justify-center mr-1">
-                                    <span class="bg-green-500 rounded-full w-1.5 h-1.5"></span>
-                                </span>
-                                <span class="text-xs text-gray-500">6 classes</span>
-                            </div>
-                            <button class="bg-[var(--button-primary)] text-white py-1 px-3 rounded-full text-xs font-bold hover:-translate-y-0.5 transition-transform">
-                                Learn More
-                            </button>
+                            </Button>
                         </div>
                     </div>
                 </div>

@@ -3,82 +3,138 @@ import Layout from '../layouts/Layout.astro';
 import Button from '../components/ui/button.astro';
 ---
 
-<Layout title="Schedule Your First Free Class - FerRealSpanish">
+<Layout title="Schedule Your Class - FerRealSpanish">
   <!-- Header Banner -->
-  <div class="bg-[var(--background-secondary)] py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-4xl md:text-5xl font-satoshi font-extrabold text-white mb-4">Schedule Your First Free Class</h1>
-      <p class="text-white/80 text-lg md:text-xl max-w-3xl mx-auto">
-        Select a date and time that works for you to begin your Spanish journey.
+  <div class="bg-[var(--background-primary)] py-12 pt-24">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-3xl md:text-4xl font-satoshi font-extrabold text-gray-800 mb-4">Schedule Your Class</h1>
+      <p class="text-gray-600 text-lg font-satoshi font-semibold max-w-2xl mx-auto">
+        Select a date and time that works best for you. Our expert instructors are ready to guide you on your learning journey.
       </p>
     </div>
   </div>
 
   <!-- Calendar Selection -->
-  <div class="py-16 bg-[var(--background-primary)]">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-      <!-- Two Column Layout -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-12 items-start">
-        <!-- Left Column: Calendar -->
-        <div class="bg-white rounded-lg p-6 shadow-lg border border-[var(--border)]">
-          <h2 class="text-2xl font-satoshi font-bold mb-6">Select a Date</h2>
-          
-          <!-- Calendar -->
-          <div id="calendar" class="calendar-container">
-            <!-- Calendar will be rendered here by the script -->
-          </div>
-        </div>
-        
-        <!-- Right Column: Available Times -->
-        <div class="bg-white rounded-lg p-6 shadow-lg border border-[var(--border)] sticky top-20">
-          <h2 class="text-2xl font-satoshi font-bold mb-6">Available Times</h2>
-          
-          <!-- Selected Date Display -->
-          <div id="selectedDate" class="text-lg font-satoshi mb-6 text-[var(--accent)]">
-            Please select a date from the calendar
-          </div>
-          
-          <!-- Available Time Slots -->
-          <div id="timeSlots" class="grid grid-cols-2 gap-3 mb-8">
-            <!-- Time slots will be populated by the script -->
-            <div class="text-center p-4 border border-gray-200 rounded-md text-gray-400">No date selected</div>
-          </div>
-          
-          <!-- Booking Form (minimal version) -->
-          <div id="bookingForm" class="hidden space-y-6 border-t border-gray-200 pt-6 mt-6">
-            <h3 class="text-xl font-satoshi font-bold">Complete Your Booking</h3>
-            
-            <div>
-              <label for="name" class="block text-gray-700 font-satoshi font-medium mb-2">Your Name</label>
-              <input 
-                type="text" 
-                id="name" 
-                name="name" 
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-              />
-            </div>
-            
-            <div>
-              <label for="email" class="block text-gray-700 font-satoshi font-medium mb-2">Email Address</label>
-              <input 
-                type="email" 
-                id="email" 
-                name="email" 
-                required
-                class="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[var(--accent)]"
-              />
-            </div>
-            
-            <div>
+  <div class="py-8 bg-[var(--background-primary)] min-h-screen">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Centered Card Layout -->
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2">
+          <!-- Left Column: Calendar -->
+          <div class="p-6 border-r border-gray-200">
+            <!-- Google Calendar Authentication -->
+            <div id="auth-container" class="mb-6 text-center hidden">
+              <p class="text-sm text-gray-600 mb-4">Please authorize access to Google Calendar to see real availability</p>
               <Button 
-                type="button"
+                variant="secondary"
+                size="sm"
+                rounded={true}
+                class="authorize-btn"
+              >
+                Authorize Google Calendar
+              </Button>
+            </div>
+            
+            <!-- Calendar -->
+            <div id="calendar" class="calendar-container">
+              <!-- Calendar will be rendered here by the script -->
+            </div>
+          </div>
+          
+          <!-- Right Column: Available Times -->
+          <div class="p-6">
+            <h3 class="text-lg font-semibold mb-4 text-gray-800">Available Time Slots</h3>
+            
+            <!-- Selected Date Display -->
+            <div id="selectedDate" class="text-sm font-medium mb-4 text-gray-600">
+              Please select a date from the calendar
+            </div>
+            
+            <!-- Loading indicator -->
+            <div id="loading" class="hidden text-center py-4">
+              <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#7dd3c0] hover:bg-[#6bc4b1] transition ease-in-out duration-150">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Loading available times...
+              </div>
+            </div>
+            
+            <!-- Available Time Slots -->
+            <div id="timeSlots" class="space-y-2 mb-6">
+              <!-- Time slots will be populated by the script -->
+              <div class="p-3 border border-gray-200 rounded-md text-center text-gray-400 text-sm">Select a date to see available times</div>
+            </div>
+            
+            <!-- Course Selection -->
+            <div class="mb-6">
+              <label class="block text-sm font-medium text-gray-700 mb-2">Select Course</label>
+              <select id="courseSelect" class="w-full p-3 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7dd3c0]">
+                <option value="conversational">Conversational Spanish</option>
+                <option value="grammar">Grammar Spanish</option>
+                <option value="travel">Travel Spanish</option>
+                <option value="business">Business Spanish</option>
+              </select>
+            </div>
+            
+            <!-- Student Information Form -->
+            <div id="studentForm" class="hidden space-y-4 mb-6 p-4 bg-gray-50 rounded-md">
+              <h4 class="font-medium text-gray-800">Student Information</h4>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                <input 
+                  type="text" 
+                  id="studentName" 
+                  required
+                  class="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7dd3c0]"
+                  placeholder="Enter your full name"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <input 
+                  type="email" 
+                  id="studentEmail" 
+                  required
+                  class="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7dd3c0]"
+                  placeholder="Enter your email"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
+                <input 
+                  type="tel" 
+                  id="studentPhone" 
+                  class="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7dd3c0]"
+                  placeholder="Enter your phone number"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Spanish Level</label>
+                <select id="spanishLevel" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7dd3c0]">
+                  <option value="beginner">Beginner</option>
+                  <option value="elementary">Elementary</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </select>
+              </div>
+            </div>
+            
+            <!-- Booking Form -->
+            <div id="bookingForm" class="space-y-4">
+              <Button 
                 variant="primary"
                 size="lg"
+                textSize="sm"
                 fullWidth={true}
                 rounded={true}
+                class="confirm-booking-btn"
               >
-                <span id="confirmBooking">Confirm Booking</span>
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span id="confirmBooking">Select a time slot</span>
               </Button>
             </div>
           </div>
@@ -89,6 +145,22 @@ import Button from '../components/ui/button.astro';
 </Layout>
 
 <script>
+  // Google Calendar API Configuration
+  const CLIENT_ID = import.meta.env.PUBLIC_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID';
+  const API_KEY = import.meta.env.PUBLIC_GOOGLE_API_KEY || 'YOUR_GOOGLE_API_KEY';
+  const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
+  const SCOPES = 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events';
+  
+  // Teacher's calendar ID - this should be set to the teacher's calendar
+  const TEACHER_CALENDAR_ID = import.meta.env.PUBLIC_TEACHER_CALENDAR_ID || 'primary';
+  
+  let tokenClient;
+  let gapiInited = false;
+  let gisInited = false;
+  let isAuthorized = false;
+  let selectedTimeSlot = null;
+  let selectedDate = null;
+
   document.addEventListener('DOMContentLoaded', () => {
     // Current date
     const currentDate = new Date();
@@ -99,60 +171,138 @@ import Button from '../components/ui/button.astro';
     const calendarEl = document.getElementById('calendar');
     const selectedDateEl = document.getElementById('selectedDate');
     const timeSlotsEl = document.getElementById('timeSlots');
-    const bookingFormEl = document.getElementById('bookingForm');
+    const loadingEl = document.getElementById('loading');
     const confirmBookingEl = document.getElementById('confirmBooking');
+    const authContainer = document.getElementById('auth-container');
+    const studentForm = document.getElementById('studentForm');
+    
+    // Load Google APIs
+    loadGoogleAPIs();
+    
+    function loadGoogleAPIs() {
+      // Load Google API script
+      const gapiScript = document.createElement('script');
+      gapiScript.src = 'https://apis.google.com/js/api.js';
+      gapiScript.onload = gapiLoaded;
+      document.head.appendChild(gapiScript);
+      
+      // Load Google Identity Services script
+      const gisScript = document.createElement('script');
+      gisScript.src = 'https://accounts.google.com/gsi/client';
+      gisScript.onload = gisLoaded;
+      document.head.appendChild(gisScript);
+    }
+    
+    function gapiLoaded() {
+      gapi.load('client', initializeGapiClient);
+    }
+    
+    async function initializeGapiClient() {
+      await gapi.client.init({
+        apiKey: API_KEY,
+        discoveryDocs: [DISCOVERY_DOC],
+      });
+      gapiInited = true;
+      maybeEnableButtons();
+    }
+    
+    function gisLoaded() {
+      tokenClient = google.accounts.oauth2.initTokenClient({
+        client_id: CLIENT_ID,
+        scope: SCOPES,
+        callback: (resp) => {
+          if (resp.error !== undefined) {
+            throw (resp);
+          }
+          isAuthorized = true;
+          authContainer.classList.add('hidden');
+          // Refresh the calendar with real data
+          if (selectedDate) {
+            loadAvailableTimeSlots(selectedDate);
+          }
+        },
+      });
+      gisInited = true;
+      maybeEnableButtons();
+    }
+    
+    function maybeEnableButtons() {
+      if (gapiInited && gisInited) {
+        // Check if user is already authorized
+        if (gapi.client.getToken() === null) {
+          authContainer.classList.remove('hidden');
+        } else {
+          isAuthorized = true;
+        }
+        
+        // Initialize calendar
+        renderCalendar(currentMonth, currentYear);
+        
+        // Add event listeners
+        addEventListeners();
+      }
+    }
+    
+    function addEventListeners() {
+      // Authorization button
+      document.querySelector('.authorize-btn')?.addEventListener('click', () => {
+        if (gapi.client.getToken() === null) {
+          tokenClient.requestAccessToken({prompt: 'consent'});
+        } else {
+          tokenClient.requestAccessToken({prompt: ''});
+        }
+      });
+      
+      // Confirm booking button
+      document.querySelector('.confirm-booking-btn')?.addEventListener('click', () => {
+        if (selectedTimeSlot && selectedDate) {
+          handleBookingConfirmation();
+        }
+      });
+    }
     
     // Render calendar
     function renderCalendar(month: number, year: number) {
-      // Month names
       const monthNames = ["January", "February", "March", "April", "May", "June",
         "July", "August", "September", "October", "November", "December"];
       
-      // Get first day of month
       const firstDay = new Date(year, month, 1).getDay();
-      
-      // Get last day of month
       const lastDate = new Date(year, month + 1, 0).getDate();
       
-      // Calendar header
       let calendarHTML = `
-        <div class="flex justify-between items-center mb-4">
-          <button id="prevMonth" class="p-2 hover:bg-gray-100 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+        <div class="flex justify-between items-center mb-6">
+          <button id="prevMonth" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
             </svg>
           </button>
-          <div class="text-xl font-bold">${monthNames[month]} ${year}</div>
-          <button id="nextMonth" class="p-2 hover:bg-gray-100 rounded-full">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+          <div class="text-lg font-semibold text-gray-800">${monthNames[month]} ${year}</div>
+          <button id="nextMonth" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
               <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
             </svg>
           </button>
         </div>
       `;
       
-      // Days of week
       calendarHTML += `
         <div class="grid grid-cols-7 gap-1 mb-2">
-          <div class="text-center font-medium">Su</div>
-          <div class="text-center font-medium">Mo</div>
-          <div class="text-center font-medium">Tu</div>
-          <div class="text-center font-medium">We</div>
-          <div class="text-center font-medium">Th</div>
-          <div class="text-center font-medium">Fr</div>
-          <div class="text-center font-medium">Sa</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Su</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Mo</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Tu</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">We</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Th</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Fr</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Sa</div>
         </div>
       `;
       
-      // Calendar body
       calendarHTML += '<div class="grid grid-cols-7 gap-1">';
       
-      // Empty cells for days before first day of month
       for (let i = 0; i < firstDay; i++) {
-        calendarHTML += '<div class="h-10 p-1"></div>';
+        calendarHTML += '<div class="h-8 p-1"></div>';
       }
       
-      // Days of month
       const today = new Date();
       const todayDate = today.getDate();
       const todayMonth = today.getMonth();
@@ -161,32 +311,33 @@ import Button from '../components/ui/button.astro';
       for (let day = 1; day <= lastDate; day++) {
         const isToday = day === todayDate && month === todayMonth && year === todayYear;
         const isPast = new Date(year, month, day) < new Date(todayYear, todayMonth, todayDate);
+        const isWeekend = new Date(year, month, day).getDay() === 0 || new Date(year, month, day).getDay() === 6;
         
         if (isPast) {
-          // Past dates
-          calendarHTML += `<div class="h-10 p-1">
-            <div class="h-full flex items-center justify-center text-gray-400">${day}</div>
+          calendarHTML += `<div class="h-8 p-1">
+            <div class="h-full flex items-center justify-center text-gray-300 text-sm">${day}</div>
           </div>`;
         } else if (isToday) {
-          // Today
-          calendarHTML += `<div class="h-10 p-1">
-            <div class="h-full flex items-center justify-center rounded-full bg-[var(--accent)] text-white cursor-pointer date-btn" data-date="${year}-${month+1}-${day}">${day}</div>
+          calendarHTML += `<div class="h-8 p-1">
+            <div class="h-full flex items-center justify-center rounded-full bg-gray-200 text-gray-800 cursor-pointer date-btn text-sm" data-date="${year}-${month+1}-${day}">${day}</div>
+          </div>`;
+        } else if (isWeekend) {
+          calendarHTML += `<div class="h-8 p-1">
+            <div class="h-full flex items-center justify-center text-gray-400 text-sm">${day}</div>
           </div>`;
         } else {
-          // Future dates
-          calendarHTML += `<div class="h-10 p-1">
-            <div class="h-full flex items-center justify-center rounded-full hover:bg-[var(--accent-light)] cursor-pointer date-btn" data-date="${year}-${month+1}-${day}">${day}</div>
+          calendarHTML += `<div class="h-8 p-1">
+            <div class="h-full flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer date-btn text-sm text-gray-700" data-date="${year}-${month+1}-${day}">${day}</div>
           </div>`;
         }
       }
       
       calendarHTML += '</div>';
       
-      // Update calendar
       if (calendarEl) {
         calendarEl.innerHTML = calendarHTML;
         
-        // Event listeners for navigation
+        // Navigation event listeners
         document.getElementById('prevMonth')?.addEventListener('click', () => {
           if (month === 0) {
             month = 11;
@@ -207,10 +358,19 @@ import Button from '../components/ui/button.astro';
           renderCalendar(month, year);
         });
         
-        // Event listeners for date selection
+        // Date selection event listeners
         document.querySelectorAll('.date-btn').forEach(btn => {
           btn.addEventListener('click', (e) => {
-            const dateStr = (e.target as HTMLElement).getAttribute('data-date');
+            document.querySelectorAll('.date-btn').forEach(b => {
+              b.classList.remove('bg-[#7dd3c0]', 'text-white');
+              b.classList.add('hover:bg-gray-100');
+            });
+            
+            const target = e.target as HTMLElement;
+            target.classList.add('bg-[#7dd3c0]', 'text-white');
+            target.classList.remove('hover:bg-gray-100');
+            
+            const dateStr = target.getAttribute('data-date');
             if (dateStr) {
               selectDate(dateStr);
             }
@@ -219,80 +379,273 @@ import Button from '../components/ui/button.astro';
       }
     }
     
-    // Select a date and show available times
-    function selectDate(dateStr: string) {
-      if (selectedDateEl && timeSlotsEl) {
-        // Format date for display
+    // Select a date and load available time slots
+    async function selectDate(dateStr: string) {
+      selectedDate = dateStr;
+      
+      if (selectedDateEl) {
         const [year, month, day] = dateStr.split('-');
         const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
         const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' } as const;
         const formattedDate = date.toLocaleDateString('en-US', options);
-        
-        // Update selected date display
         selectedDateEl.textContent = formattedDate;
+      }
+      
+      await loadAvailableTimeSlots(dateStr);
+    }
+    
+    // Load available time slots from Google Calendar
+    async function loadAvailableTimeSlots(dateStr: string) {
+      if (!timeSlotsEl || !loadingEl) return;
+      
+      // Show loading
+      loadingEl.classList.remove('hidden');
+      timeSlotsEl.innerHTML = '';
+      
+      try {
+        let availableSlots = [];
         
-        // Generate mock available times (this would be replaced by Google Calendar API data)
-        const mockTimeSlots = [
-          "9:00 AM", "10:00 AM", "11:00 AM", 
-          "1:00 PM", "2:00 PM", "3:00 PM", "4:00 PM", "5:00 PM"
-        ];
+        if (isAuthorized && gapi.client.getToken()) {
+          // Get real availability from Google Calendar
+          availableSlots = await getRealAvailability(dateStr);
+        } else {
+          // Show mock availability
+          availableSlots = getMockAvailability();
+        }
         
-        // Randomly make some slots unavailable for demo purposes
-        const availableSlots = mockTimeSlots.filter(() => Math.random() > 0.3);
+        // Hide loading
+        loadingEl.classList.add('hidden');
         
-        // Show time slots
         if (availableSlots.length > 0) {
           let slotsHTML = '';
-          availableSlots.forEach(time => {
+          availableSlots.forEach(slot => {
+            const baseClasses = "p-3 rounded-md text-center text-sm cursor-pointer transition-colors time-btn";
+            const stateClasses = "border border-gray-200 hover:bg-gray-50 text-gray-700";
+            
             slotsHTML += `
-              <button class="p-4 border border-[var(--accent-light)] rounded-md hover:bg-[var(--accent-light)] transition-colors time-btn" data-time="${time}">
-                ${time}
-              </button>
+              <div class="${baseClasses} ${stateClasses}" data-time="${slot.startTime}-${slot.endTime}" data-start="${slot.startTime}" data-end="${slot.endTime}">
+                ${slot.displayTime}
+              </div>
             `;
           });
           timeSlotsEl.innerHTML = slotsHTML;
           
-          // Event listeners for time selection
+          // Add time slot selection listeners
           document.querySelectorAll('.time-btn').forEach(btn => {
             btn.addEventListener('click', (e) => {
-              // Remove active class from all buttons
               document.querySelectorAll('.time-btn').forEach(b => {
-                b.classList.remove('bg-[var(--accent)]', 'text-white');
+                b.classList.remove('bg-[#7dd3c0]', 'text-white');
+                b.classList.add('border', 'border-gray-200', 'hover:bg-gray-50', 'text-gray-700');
               });
               
-              // Add active class to clicked button
-              (e.target as HTMLElement).classList.add('bg-[var(--accent)]', 'text-white');
+              const target = e.target as HTMLElement;
+              target.classList.add('bg-[#7dd3c0]', 'text-white');
+              target.classList.remove('border', 'border-gray-200', 'hover:bg-gray-50', 'text-gray-700');
               
-              // Show booking form
-              if (bookingFormEl) {
-                bookingFormEl.classList.remove('hidden');
-              }
+              selectedTimeSlot = {
+                date: selectedDate,
+                startTime: target.getAttribute('data-start'),
+                endTime: target.getAttribute('data-end'),
+                displayTime: target.textContent
+              };
+              
+              // Update button text and show form
+              confirmBookingEl.textContent = 'Book This Class';
+              studentForm.classList.remove('hidden');
             });
           });
         } else {
-          timeSlotsEl.innerHTML = '<div class="col-span-2 text-center p-4 border border-gray-200 rounded-md">No available times for this date</div>';
+          timeSlotsEl.innerHTML = '<div class="text-center p-4 border border-gray-200 rounded-md text-gray-400">No available times for this date</div>';
+        }
+      } catch (error) {
+        console.error('Error loading time slots:', error);
+        loadingEl.classList.add('hidden');
+        timeSlotsEl.innerHTML = '<div class="text-center p-4 border border-red-200 rounded-md text-red-400">Error loading availability. Please try again.</div>';
+      }
+    }
+    
+    // Get real availability from Google Calendar
+    async function getRealAvailability(dateStr: string) {
+      try {
+        const [year, month, day] = dateStr.split('-');
+        const startDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        const endDate = new Date(startDate);
+        endDate.setDate(endDate.getDate() + 1);
+        
+        // Get busy times from calendar
+        const response = await gapi.client.calendar.freebusy.query({
+          'timeMin': startDate.toISOString(),
+          'timeMax': endDate.toISOString(),
+          'items': [{'id': TEACHER_CALENDAR_ID}]
+        });
+        
+        const busyTimes = response.result.calendars[TEACHER_CALENDAR_ID]?.busy || [];
+        
+        // Generate available slots (9 AM to 6 PM, excluding busy times)
+        const availableSlots = [];
+        for (let hour = 9; hour < 18; hour++) {
+          const slotStart = new Date(startDate);
+          slotStart.setHours(hour, 0, 0, 0);
+          const slotEnd = new Date(slotStart);
+          slotEnd.setHours(hour + 1, 0, 0, 0);
           
-          // Hide booking form
-          if (bookingFormEl) {
-            bookingFormEl.classList.add('hidden');
+          // Check if this slot conflicts with busy times
+          const isAvailable = !busyTimes.some(busy => {
+            const busyStart = new Date(busy.start);
+            const busyEnd = new Date(busy.end);
+            return (slotStart < busyEnd && slotEnd > busyStart);
+          });
+          
+          if (isAvailable) {
+            availableSlots.push({
+              startTime: slotStart.toISOString(),
+              endTime: slotEnd.toISOString(),
+              displayTime: `${formatTime(slotStart)} - ${formatTime(slotEnd)}`
+            });
           }
         }
+        
+        return availableSlots;
+      } catch (error) {
+        console.error('Error fetching calendar data:', error);
+        return getMockAvailability();
       }
+    }
+    
+    // Get mock availability for demo purposes
+    function getMockAvailability() {
+      return [
+        { startTime: '09:00', endTime: '10:00', displayTime: '09:00 AM - 10:00 AM' },
+        { startTime: '10:30', endTime: '11:30', displayTime: '10:30 AM - 11:30 AM' },
+        { startTime: '13:00', endTime: '14:00', displayTime: '01:00 PM - 02:00 PM' },
+        { startTime: '14:30', endTime: '15:30', displayTime: '02:30 PM - 03:30 PM' },
+        { startTime: '16:00', endTime: '17:00', displayTime: '04:00 PM - 05:00 PM' }
+      ];
+    }
+    
+    // Format time for display
+    function formatTime(date: Date) {
+      return date.toLocaleTimeString('en-US', { 
+        hour: 'numeric', 
+        minute: '2-digit',
+        hour12: true 
+      });
+    }
+    
+    // Handle booking confirmation
+    async function handleBookingConfirmation() {
+      if (!selectedTimeSlot) return;
+      
+      const studentName = (document.getElementById('studentName') as HTMLInputElement)?.value;
+      const studentEmail = (document.getElementById('studentEmail') as HTMLInputElement)?.value;
+      const studentPhone = (document.getElementById('studentPhone') as HTMLInputElement)?.value;
+      const spanishLevel = (document.getElementById('spanishLevel') as HTMLSelectElement)?.value;
+      const courseType = (document.getElementById('courseSelect') as HTMLSelectElement)?.value;
+      
+      if (!studentName || !studentEmail) {
+        alert('Please fill in all required fields');
+        return;
+      }
+      
+      try {
+        // Show loading state
+        confirmBookingEl.textContent = 'Creating booking...';
+        
+        if (isAuthorized && gapi.client.getToken()) {
+          await createGoogleCalendarEvent(selectedTimeSlot, {
+            name: studentName,
+            email: studentEmail,
+            phone: studentPhone,
+            level: spanishLevel,
+            course: courseType
+          });
+        }
+        
+        // Show success message
+        alert('¡Booking confirmed! You will receive a confirmation email shortly.');
+        
+        // Reset form
+        resetBookingForm();
+        
+      } catch (error) {
+        console.error('Booking error:', error);
+        alert('There was an error creating your booking. Please try again or contact us directly.');
+        confirmBookingEl.textContent = 'Book This Class';
+      }
+    }
+    
+    // Create Google Calendar event
+    async function createGoogleCalendarEvent(timeSlot, studentInfo) {
+      const event = {
+        'summary': `Spanish Class - ${studentInfo.course} (${studentInfo.level})`,
+        'description': `Student: ${studentInfo.name}\nEmail: ${studentInfo.email}\nPhone: ${studentInfo.phone || 'Not provided'}\nLevel: ${studentInfo.level}\nCourse Type: ${studentInfo.course}`,
+        'start': {
+          'dateTime': timeSlot.startTime,
+          'timeZone': 'America/New_York', // Adjust timezone as needed
+        },
+        'end': {
+          'dateTime': timeSlot.endTime,
+          'timeZone': 'America/New_York', // Adjust timezone as needed
+        },
+        'attendees': [
+          {'email': studentInfo.email}
+        ],
+        'conferenceData': {
+          'createRequest': {
+            'requestId': 'fer-spanish-' + Date.now(),
+            'conferenceSolutionKey': {
+              'type': 'hangoutsMeet'
+            }
+          }
+        },
+        'reminders': {
+          'useDefault': false,
+          'overrides': [
+            {'method': 'email', 'minutes': 24 * 60}, // 1 day before
+            {'method': 'popup', 'minutes': 30} // 30 minutes before
+          ]
+        }
+      };
+      
+      const request = gapi.client.calendar.events.insert({
+        'calendarId': TEACHER_CALENDAR_ID,
+        'resource': event,
+        'conferenceDataVersion': 1,
+        'sendUpdates': 'all'
+      });
+      
+      return request.execute();
+    }
+    
+    // Reset booking form
+    function resetBookingForm() {
+      selectedTimeSlot = null;
+      selectedDate = null;
+      confirmBookingEl.textContent = 'Select a time slot';
+      studentForm.classList.add('hidden');
+      
+      // Clear form fields
+      ['studentName', 'studentEmail', 'studentPhone'].forEach(id => {
+        const element = document.getElementById(id) as HTMLInputElement;
+        if (element) element.value = '';
+      });
+      
+      // Reset calendar selection
+      document.querySelectorAll('.date-btn').forEach(b => {
+        b.classList.remove('bg-[#7dd3c0]', 'text-white');
+      });
+      
+      // Reset time slots
+      timeSlotsEl.innerHTML = '<div class="p-3 border border-gray-200 rounded-md text-center text-gray-400 text-sm">Select a date to see available times</div>';
+      selectedDateEl.textContent = 'Please select a date from the calendar';
     }
     
     // Initialize calendar
     renderCalendar(currentMonth, currentYear);
-    
-    // Event listener for confirm booking button
-    confirmBookingEl?.addEventListener('click', () => {
-      // This would be replaced with actual booking logic and API call
-      alert('Booking functionality will be connected to Google Calendar API');
-    });
   });
 </script>
 
 <style>
-  /* Additional styles */
   .calendar-container {
     user-select: none;
   }

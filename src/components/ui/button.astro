@@ -2,7 +2,8 @@
 // Button.astro - A versatile button component for FerRealSpanish
 export interface Props {
   variant?: 'primary' | 'secondary' | 'accent' | 'outline';
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'xs' | 'sm' | 'md' | 'lg';
+  textSize?: 'xs' | 'sm' | 'md' | 'lg';
   fullWidth?: boolean;
   href?: string;
   type?: 'button' | 'submit' | 'reset';
@@ -16,6 +17,7 @@ export interface Props {
 const {
   variant = 'primary',
   size = 'md',
+  textSize = 'md',
   fullWidth = false,
   href,
   type = 'button',
@@ -36,16 +38,25 @@ const variantClasses = {
 
 // Size classes
 const sizeClasses = {
+  xs: 'px-2 py-1 text-xs',
   sm: 'px-4 py-1.5 text-sm',
   md: 'px-6 py-2 text-base',
   lg: 'px-8 py-3 text-lg'
 };
 
+// Text size classes
+const textSizeClasses = {
+  xs: 'text-xs',
+  sm: 'text-sm',
+  md: 'text-base',
+  lg: 'text-lg'
+};    
+
 const baseClasses = 'inline-flex items-center justify-center font-bold transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--button-primary)] hover:-translate-y-1';
 const roundedClass = rounded ? 'rounded-full' : 'rounded-md';
 const outlineClass = outline ? 'border-2 border-[var(--button-primary)]' : '';
 const shadowClass = shadow ? 'shadow-[-7px_6px_0px_0px_#000000]' : '';
-const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${roundedClass} ${fullWidth ? 'w-full' : ''} ${className} ${outlineClass} ${shadowClass}`; 
+const classes = `${baseClasses} ${variantClasses[variant]} ${sizeClasses[size]} ${textSizeClasses[textSize]} ${roundedClass} ${fullWidth ? 'w-full' : ''} ${className} ${outlineClass} ${shadowClass}`; 
 
 // Determine if we should render an anchor or a button
 const Tag = href ? 'a' : 'button';
