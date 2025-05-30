@@ -1,18 +1,21 @@
 ---
 import Button from '../components/ui/button.astro';
----
 
+const title = "Why";
+---
 <section class="py-16 bg-[var(--background-secondary)]">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="text-center mb-12">
-            <h2 class="text-5xl font-satoshi font-extrabold mb-8">Why</h2>
-            <div class="svg-container">
-                <div class="text-white font-satoshi font-extrabold">Choose me</div>
-                <svg viewBox="0 0 300 100" preserveAspectRatio="none">
-                  <ellipse cx="150" cy="50" rx="150" ry="40" fill="none" stroke="#ffffff" stroke-width="1.2" transform="rotate(0 150 50)" />
-                  <ellipse cx="150" cy="50" rx="150" ry="40" fill="none" stroke="#ffffff" stroke-width="1.2" transform="rotate(-8 150 50)" />
-                </svg>
-            </div>
+            <h2 class="text-5xl font-satoshi font-extrabold mb-8">
+                <span class="title-spacing">{title}</span>
+                <div class="svg-container">
+                    <div class="text-white text-5xl font-satoshi font-extrabold max-w-3xl mx-auto">Choose me</div>
+                    <svg viewBox="0 0 300 100" preserveAspectRatio="none">
+                    <ellipse cx="150" cy="50" rx="150" ry="40" fill="none" stroke="#ffffff" stroke-width="1.2" transform="rotate(0 150 50)" />
+                    <ellipse cx="150" cy="50" rx="150" ry="40" fill="none" stroke="#ffffff" stroke-width="1.2" transform="rotate(-8 150 50)" />
+                    </svg>
+                </div>
+            </h2>
             <p class="text-lg font-bold max-w-2xl mx-auto mb-6">My unique approach focuses on conversational fluency, cultural immersion, and personalized learning experiences designed just for you.</p>
         </div>
         
@@ -51,11 +54,16 @@ import Button from '../components/ui/button.astro';
 </section>
 
 <style>
+    .title-spacing {
+        margin-right: 1.4rem;
+    }
+
     .svg-container {
     position: relative;
     display: inline-block;
-    padding-top: 0.5rem;
-    padding-bottom: 0.5rem;
+    padding-top: 1.5rem;
+    padding-bottom: 1.5rem;
+    margin-top: 1rem;
   }
 
   .svg-container svg {
