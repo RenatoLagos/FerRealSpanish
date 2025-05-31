@@ -1,0 +1,165 @@
+---
+import Button from './ui/button.astro';
+
+interface PricingPlan {
+  name: string;
+  price: number;
+  originalPrice?: number;
+  currency: string;
+  classes: number;
+  freeClasses?: number;
+  pricePerClass: number;
+  popular?: boolean;
+  features: string[];
+  buttonText: string;
+  buttonVariant: 'primary' | 'secondary';
+}
+
+const pricingPlans: PricingPlan[] = [
+  {
+    name: "Single Class",
+    price: 25,
+    currency: "USD",
+    classes: 1,
+    pricePerClass: 25,
+    features: [
+      "1 personalized class",
+      "Conversation practice",
+      "Custom materials",
+      "Flexible scheduling"
+    ],
+    buttonText: "Book Single Class",
+    buttonVariant: "secondary"
+  },
+  {
+    name: "Mini Package",
+    price: 120,
+    originalPrice: 150,
+    currency: "USD",
+    classes: 6,
+    pricePerClass: 20,
+    features: [
+      "6 personalized classes",
+      "Progress tracking",
+      "Custom curriculum",
+      "WhatsApp support",
+      "Flexible scheduling"
+    ],
+    buttonText: "Get Started",
+    buttonVariant: "secondary"
+  },
+  {
+    name: "Full Program",
+    price: 480,
+    originalPrice: 600,
+    currency: "USD",
+    classes: 24,
+    freeClasses: 5,
+    pricePerClass: 20,
+    popular: true,
+    features: [
+      "24 personalized classes",
+      "+5 FREE bonus classes",
+      "Complete curriculum",
+      "Weekly progress reports",
+      "24/7 WhatsApp support",
+      "Certificate of completion",
+      "Cultural immersion content"
+    ],
+    buttonText: "Most Popular",
+    buttonVariant: "primary"
+  },
+  {
+    name: "Intensive Program",
+    price: 800,
+    originalPrice: 1000,
+    currency: "USD",
+    classes: 40,
+    freeClasses: 8,
+    pricePerClass: 20,
+    features: [
+      "40 personalized classes",
+      "+8 FREE bonus classes",
+      "Intensive curriculum",
+      "Daily practice materials",
+      "Priority scheduling",
+      "Personal tutor support",
+      "Advanced conversation practice"
+    ],
+    buttonText: "Go Intensive",
+    buttonVariant: "secondary"
+  }
+];
+
+---
+
+<section class="py-16 bg-[var(--background-primary)]">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-6xl font-satoshi font-extrabold mb-6">Choose Your Plan</h2>
+      <p class="text-lg font-semibold max-w-2xl mx-auto mb-8">
+        Find the perfect learning program that fits your goals and schedule. All plans include personalized attention and native speaker expertise.
+      </p>
+    </div>
+    
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+      {pricingPlans.map((plan) => (
+        <div class={`bg-white rounded-2xl p-6 transition-all duration-200 hover:-translate-y-1 relative ${plan.popular ? 'shadow-[-7px_6px_0px_0px_#000000] border-2 border-[var(--button-primary)]' : 'shadow-[6px_6px_0px_0px_#000000]'}`}>
+          
+          {plan.popular && (
+            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <Button variant="primary" size="sm" class="pointer-events-none">
+                Most Popular
+              </Button>
+            </div>
+          )}
+          
+          <div class="text-center mb-6">
+            <h3 class="text-xl font-satoshi font-bold mb-2">{plan.name}</h3>
+            
+            <div class="mb-2">
+              {plan.originalPrice && (
+                <span class="text-gray-500 line-through text-sm">${plan.originalPrice} {plan.currency}</span>
+              )}
+              <div class="text-3xl font-satoshi font-extrabold text-gray-900">
+                ${plan.price} <span class="text-lg font-normal">{plan.currency}</span>
+              </div>
+            </div>
+            
+            <div class="text-sm text-gray-600 mb-1">
+              ${plan.pricePerClass}/class
+            </div>
+            
+            <div class="text-sm font-semibold text-[var(--button-primary)]">
+              {plan.classes} classes{plan.freeClasses ? ` + ${plan.freeClasses} FREE` : ''}
+            </div>
+          </div>
+          
+          <ul class="space-y-3 mb-6 text-sm">
+            {plan.features.map((feature) => (
+              <li class="flex items-start">
+                <svg class="w-4 h-4 text-[var(--button-primary)] mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-gray-700">{feature}</span>
+              </li>
+            ))}
+          </ul>
+          
+          <div class="mt-auto">
+            <Button 
+              variant={plan.buttonVariant}
+              size="md"
+              fullWidth={true}
+              rounded={true}
+              shadow={plan.popular}
+              href="/schedule-class"
+            >
+              {plan.buttonText}
+            </Button>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

@@ -1,39 +1,57 @@
 ---
+import Button from './ui/button.astro';
+
 interface Props {
   regularPrice?: number;
   salePrice?: number;
   currency?: string;
-  numberOfClasses?: number;
   freeClasses?: number;
   pricePerClass?: number;
+  description?: string;
 }
 
 const {
   regularPrice = 600,
   salePrice = 480,
   currency = "USD",
-  numberOfClasses = 24,
   freeClasses = 5,
   pricePerClass = 20,
+  description = "24 personalized classes according to your needs and objectives. Perfect for maintaining a consistent learning pace with flexible scheduling.",
 } = Astro.props;
 ---
 
 <section class="w-full max-w-5xl mx-auto my-16 px-4">
   <div class="FullProgram">
     <div class="flex flex-col md:flex-row">
-      <div class="md:w-2/5 relative flex items-center justify-center p-6 rounded-l-lg">
+      <div class="md:w-2/5 relative flex items-center justify-center rounded-l-lg">
         <img 
           src="/full_program.jpg" 
           alt="Special Price" 
-          class="w-full max-w-[400px] h-auto object-contain rounded-lg shadow-md hover:scale-105 transition-transform duration-300"
+          class="w-full max-w-[500px] h-auto object-contain rounded-lg shadow-md hover:scale-105 transition-transform duration-300"
         />
         <div class="absolute top-0 left-0 w-full h-full flex items-center justify-center">
           <div class="relative">
           </div>
         </div>
       </div>    
-      <div class="md:w-3/5 p-8">        
-        <h2 class="text-3xl font-satoshi font-bold text-gray-900 mb-4">Pack 24 classes - Regular Classes</h2>
+      <div class="md:w-3/5 ml-12 pr-12">        
+        <Button 
+          variant="primary" 
+          size="sm" 
+          class="pointer-events-none mb-3"
+          rounded={true}
+        >
+          Most Popular
+        </Button> 
+        <Button 
+          variant="secondary" 
+          size="sm"
+          class="pointer-events-none"
+          rounded={true}
+        >
+          +{freeClasses} FREE CLASSES
+        </Button>       
+        <h2 class="text-3xl font-satoshi font-bold text-gray-900 mb-4 mt-2">Pack 24 Classes</h2>
         
         <div class="mb-4 flex items-center">
           <span class="text-gray-500 line-through">{regularPrice} {currency}</span>
@@ -43,22 +61,15 @@ const {
         <div class="mb-4">
           <div class="flex items-center mb-2">
             <span class="text-orange-500 text-lg mr-2">💰</span>
-            <span class="text-lg font-semibold">${pricePerClass}/class</span>
-          </div>
-          <div class="flex items-center mb-4">
-            <span class="text-purple-500 text-lg mr-2">📅</span>
+            <span class="text-lg font-semibold mr-12">${pricePerClass}/class</span>
+            <span class="text-purple-500 text-lg">📅</span>
             <span class="text-gray-700">1-2 or 3 classes/week</span>
           </div>
         </div>
         
         <p class="text-gray-700 mb-4">
-          {numberOfClasses} personalized classes according to your needs and objectives. 
-          Perfect for maintaining a consistent learning pace with flexible scheduling.
+          {description}
         </p>
-        
-        <div class="bg-green-100 border border-green-300 rounded-lg p-3">
-          <p class="text-green-800 font-semibold">+{freeClasses} FREE CLASSES</p>
-        </div>
       </div>
     </div>
   </div>
@@ -68,7 +79,10 @@ const {
   .FullProgram {
     background-color: white;
     border-radius: 20px;
-    padding: 20px;
+    padding-top: 40px;
+    padding-bottom: 40px;
+    padding-left: 40px;
+    padding-right: 0px;
     box-shadow: 6px 6px 0px 0px #000000;
     margin-bottom: 100px;
     margin-top: 120px;
