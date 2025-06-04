@@ -6,11 +6,11 @@
 
 @layer base {
     :root {
-        --background-primary: #FFFFFF;
-        --background-secondary: #75BDA9;        
-        --button-primary: #EC4845;
-        --button-secondary: #1A9988;
-        --footer-background: #1A9988;
+        --background-primary: #F6EDDB;
+        --background-secondary: #E4A632;        
+        --button-primary: #CE6B4A;
+        --button-secondary: #75BDA9;
+        --footer-background: #8B2D33;
     }
       
     body {
