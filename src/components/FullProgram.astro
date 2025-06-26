@@ -11,12 +11,12 @@ interface Props {
 }
 
 const {
-  regularPrice = 600,
-  salePrice = 480,
+  regularPrice = 1440,
+  salePrice = 1104,
   currency = "USD",
-  freeClasses = 5,
-  pricePerClass = 20,
-  description = "24 personalized classes according to your needs and objectives. Perfect for maintaining a consistent learning pace with flexible scheduling.",
+  freeClasses = 10,
+  pricePerClass = 23,
+  description = "48 personalized classes according to your needs and objectives. Perfect for maintaining a consistent learning pace with flexible scheduling over 6 months.",
 } = Astro.props;
 ---
 
@@ -41,7 +41,7 @@ const {
           class="pointer-events-none mb-3"
           rounded={true}
         >
-          Most Popular
+          Best-selling
         </Button> 
         <Button 
           variant="secondary" 
@@ -51,7 +51,7 @@ const {
         >
           +{freeClasses} FREE CLASSES
         </Button>       
-        <h2 class="text-3xl font-satoshi font-bold text-gray-900 mb-4 mt-2">Pack 24 Classes</h2>
+        <h2 class="text-3xl font-satoshi font-bold text-gray-900 mb-4 mt-2">6 Months - 48 Classes</h2>
         
         <div class="mb-4 flex items-center">
           <span class="text-gray-500 line-through">{regularPrice} {currency}</span>
@@ -63,7 +63,7 @@ const {
             <span class="text-orange-500 text-lg mr-2">💰</span>
             <span class="text-lg font-semibold mr-12">${pricePerClass}/class</span>
             <span class="text-purple-500 text-lg">📅</span>
-            <span class="text-gray-700">1-2 or 3 classes/week</span>
+            <span class="text-gray-700">2 classes/week</span>
           </div>
         </div>
         
@@ -84,6 +84,7 @@ const {
     padding-left: 40px;
     padding-right: 0px;
     box-shadow: 6px 6px 0px 0px #000000;
+    border: 3px solid #e5e7eb;
     margin-bottom: 100px;
     margin-top: 120px;
   }

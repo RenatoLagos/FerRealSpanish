@@ -17,31 +17,18 @@ interface PricingPlan {
 
 const pricingPlans: PricingPlan[] = [
   {
-    name: "Single Class",
-    price: 25,
+    name: "3 Months",
+    price: 624,
+    originalPrice: 720,
     currency: "USD",
-    classes: 1,
-    pricePerClass: 25,
+    classes: 24,
+    freeClasses: 3,
+    pricePerClass: 26,
     features: [
-      "1 personalized class",
-      "Conversation practice",
+      "24 personalized classes",
+      "+3 FREE lessons",
+      "2 lessons/week",
       "Custom materials",
-      "Flexible scheduling"
-    ],
-    buttonText: "Book Single Class",
-    buttonVariant: "secondary"
-  },
-  {
-    name: "Mini Package",
-    price: 120,
-    originalPrice: 150,
-    currency: "USD",
-    classes: 6,
-    pricePerClass: 20,
-    features: [
-      "6 personalized classes",
-      "Progress tracking",
-      "Custom curriculum",
       "WhatsApp support",
       "Flexible scheduling"
     ],
@@ -49,44 +36,45 @@ const pricingPlans: PricingPlan[] = [
     buttonVariant: "secondary"
   },
   {
-    name: "Full Program",
-    price: 480,
-    originalPrice: 600,
+    name: "6 Months",
+    price: 1104,
+    originalPrice: 1440,
     currency: "USD",
-    classes: 24,
-    freeClasses: 5,
-    pricePerClass: 20,
+    classes: 48,
+    freeClasses: 10,
+    pricePerClass: 23,
     popular: true,
     features: [
-      "24 personalized classes",
-      "+5 FREE bonus classes",
+      "48 personalized classes",
+      "+10 FREE lessons",
+      "2 lessons/week",
       "Complete curriculum",
       "Weekly progress reports",
       "24/7 WhatsApp support",
-      "Certificate of completion",
-      "Cultural immersion content"
+      "Certificate of completion"
     ],
-    buttonText: "Most Popular",
+    buttonText: "Best-selling",
     buttonVariant: "primary"
   },
   {
-    name: "Intensive Program",
-    price: 800,
-    originalPrice: 1000,
+    name: "12 Months",
+    price: 1920,
+    originalPrice: 2880,
     currency: "USD",
-    classes: 40,
-    freeClasses: 8,
+    classes: 96,
+    freeClasses: 30,
     pricePerClass: 20,
     features: [
-      "40 personalized classes",
-      "+8 FREE bonus classes",
+      "96 personalized classes",
+      "+30 FREE lessons",
+      "2 lessons/week",
       "Intensive curriculum",
       "Daily practice materials",
       "Priority scheduling",
       "Personal tutor support",
       "Advanced conversation practice"
     ],
-    buttonText: "Go Intensive",
+    buttonText: "Best Value",
     buttonVariant: "secondary"
   }
 ];
@@ -120,9 +108,9 @@ const pricingPlans: PricingPlan[] = [
       </Button>
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
       {pricingPlans.map((plan) => (
-        <div class={`bg-white rounded-2xl p-6 transition-all duration-200 hover:-translate-y-1 relative flex flex-col ${plan.popular ? 'shadow-[6px_6px_0px_0px_#000000] border-2 border-[var(--button-primary)]' : 'shadow-[6px_6px_0px_0px_#000000]'}`}>
+        <div class={`bg-white rounded-2xl p-6 border-4 border-gray-200 transition-all duration-200 hover:-translate-y-1 relative flex flex-col ${plan.popular ? 'shadow-[6px_6px_0px_0px_#000000] border-4 border-[var(--button-primary)]' : 'shadow-[6px_6px_0px_0px_#000000]'}`}>
           
           {plan.popular && (
             <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -132,7 +120,7 @@ const pricingPlans: PricingPlan[] = [
             </div>
           )}
           
-          <div class="text-center mb-6">
+          <div class="text-center mb-4">
             <h3 class="text-xl font-satoshi font-bold mb-2">{plan.name}</h3>
             
             <div class="mb-2">
@@ -153,7 +141,7 @@ const pricingPlans: PricingPlan[] = [
             </div>
           </div>
           
-          <ul class="space-y-3 mb-6 text-sm flex-grow">
+          <ul class="space-y-2 mb-4 text-sm flex-grow">
             {plan.features.map((feature) => (
               <li class="flex items-start">
                 <svg class="w-4 h-4 text-[var(--button-primary)] mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
