@@ -17,6 +17,25 @@ interface PricingPlan {
 
 const pricingPlans: PricingPlan[] = [
   {
+    name: "1.5 Month",
+    price: 336,
+    originalPrice: 360,
+    currency: "USD",
+    classes: 12,
+    freeClasses: 1,
+    pricePerClass: 28,
+    features: [
+      "12 personalized classes",
+      "+1 FREE lesson",
+      "2 lessons/week",
+      "Custom materials",
+      "WhatsApp support",
+      "Flexible scheduling"
+    ],
+    buttonText: "Get Started",
+    buttonVariant: "secondary"
+  },
+  {
     name: "3 Months",
     price: 624,
     originalPrice: 720,
@@ -108,7 +127,7 @@ const pricingPlans: PricingPlan[] = [
       </Button>
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
       {pricingPlans.map((plan) => (
         <div class={`bg-white rounded-2xl p-6 border-4 border-gray-200 transition-all duration-200 hover:-translate-y-1 relative flex flex-col ${plan.popular ? 'shadow-[6px_6px_0px_0px_#000000] border-4 border-[var(--button-primary)]' : 'shadow-[6px_6px_0px_0px_#000000]'}`}>
           
