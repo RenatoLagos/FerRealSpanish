@@ -4,113 +4,75 @@ import Button from '../components/ui/button.astro';
 ---
 
 <Layout title="About Me - FerRealSpanish">
-  <!-- Header Banner -->
-  <div class="bg-[var(--background-secondary)] py-16">
-    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-      <h1 class="text-4xl md:text-5xl font-satoshi font-extrabold text-white mb-4">Make Your Dream Come True</h1>
-      <p class="text-white/80 text-lg md:text-xl max-w-3xl mx-auto">
-        Speak Spanish and Experience Latin America 🌟
-      </p>
+<!-- Minimalist About Section -->
+<section id="about-section" class="py-32 pt-32 bg-[var(--background-primary)]">
+  <div class="max-w-4xl mx-auto px-6 sm:px-8 lg:px-12">
+    
+    <!-- Simple Header -->
+    <div class="text-center mb-20">
+      <h1 class="text-5xl md:text-6xl font-satoshi font-extrabold text-black mb-6">
+        About Me
+      </h1>
+      <div class="w-16 h-1 bg-[var(--button-secondary)] mx-auto"></div>
     </div>
-  </div>
 
-  <!-- Main Content -->
-  <div class="py-16 bg-[var(--background-primary)]">
-    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
-      
-      <!-- Intro Section -->
-      <div class="mb-16 text-center">
-        <h2 class="text-3xl font-satoshi font-bold mb-6">✈️</h2>
-        <div class="space-y-4 text-lg max-w-3xl mx-auto">
-          <p>
-            Are you captivated by the sound of Spanish and dream of one day exploring Latin America, connecting with its people and culture?
-          </p>
-          <p>
-            Turn that aspiration into reality by learning the language that opens doors to authentic experiences.
-          </p>
-          <p>
-            My course is designed for passionate learners like you who wish to travel, live, feel and communicate fluently.
-          </p>
-        </div>
+    <!-- Main Photo -->
+    <div class="text-center mb-16">
+      <div class="inline-block">
+        <img 
+          src="/Best photos Fer/IMG_3363.JPEG" 
+          alt="Fernanda, Spanish teacher" 
+          class="w-64 h-64 md:w-80 md:h-80 rounded-full object-cover shadow-lg mx-auto"
+        />
       </div>
-      
-      <!-- Bio Section -->
-      <div class="flex flex-col md:flex-row gap-12 mb-16 items-center">
-        <div class="md:w-1/3">
-          <img 
-            src="/Fer.jpeg" 
-            alt="Fernanda, Spanish teacher" 
-            class="rounded-2xl shadow-xl w-full max-w-[300px] mx-auto"
-          />
-        </div>
-        <div class="md:w-2/3">
-          <h2 class="text-3xl font-satoshi font-bold mb-6">About your teacher 👋</h2>
-          <div class="space-y-4 text-lg">
-            <p>
-              Hola! I'm Fernanda Pacheco.
-            </p>
-            <p>
-              I'm a 27-year-old Spanish teacher from Chile with over five years of experience teaching in various settings, including schools, volunteer programs and private lessons.
-            </p>
-            <p>
-              I've studied English and French for several years, and I understand the challenges that come with language acquisition—especially the frustration of feeling stuck or unable to express oneself fully.
-            </p>
-            <p>
-              🌎 That's why my teaching approach is 100% immersive in Spanish, helping you adapt to the language naturally and train your brain to think in Spanish.
-            </p>
-          </div>
-        </div>
-      </div>
-      
-      <!-- What I Offer Section -->
-      <div class="mb-16">
-        <h2 class="text-3xl font-satoshi font-bold mb-8 text-center">What I offer</h2>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div class="bg-white p-6 rounded-lg shadow-md border border-[var(--border)] text-center">
-            <h3 class="font-bold text-xl mb-3 text-[var(--accent)]">Personalized Content</h3>
-            <p>Lessons tailored to your specific goals, interests, and learning pace</p>
-          </div>
-          
-          <div class="bg-white p-6 rounded-lg shadow-md border border-[var(--border)] text-center">
-            <h3 class="font-bold text-xl mb-3 text-[var(--accent)]">Conversational Focus</h3>
-            <p>Practice speaking from day one with natural, everyday conversations</p>
-          </div>
-          
-          <div class="bg-white p-6 rounded-lg shadow-md border border-[var(--border)] text-center">
-            <h3 class="font-bold text-xl mb-3 text-[var(--accent)]">Dynamic Materials</h3>
-            <p>Engaging resources that make learning enjoyable and effective</p>
-          </div>
-        </div>
+    </div>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          <div class="bg-white p-6 rounded-lg shadow-md border border-[var(--border)] text-center">
-            <h3 class="font-bold text-xl mb-3 text-[var(--accent)]">Cultural Immersion</h3>
-            <p>Learn about Latin American culture, traditions, and daily life as you progress</p>
-          </div>
-          
-          <div class="bg-white p-6 rounded-lg shadow-md border border-[var(--border)] text-center">
-            <h3 class="font-bold text-xl mb-3 text-[var(--accent)]">Flexible Scheduling</h3>
-            <p>Classes that fit your busy life with convenient online options</p>
-          </div>
-        </div>
-      </div>
+    <!-- Simple Bio -->
+    <div class="max-w-2xl mx-auto text-center space-y-8 mb-20">
+      <h2 class="text-3xl md:text-4xl font-satoshi font-bold text-black">
+        ¡Hola! I'm Fernanda
+      </h2>
       
-      <!-- CTA -->
-      <div class="text-center">
-        <h2 class="text-3xl font-satoshi font-bold mb-6">Contact me!</h2>
-        <p class="text-lg mb-8 max-w-2xl mx-auto">
-          Book your free trial class & begin your immersive Spanish experience
+      <div class="space-y-6 text-lg text-black leading-relaxed">
+        <p>
+          I'm a 27-year-old Spanish teacher from Chile with over 5 years of experience teaching in schools, volunteer programs, and private lessons.
         </p>
-        <Button 
-          href="/schedule-class" 
-          variant="primary" 
-          size="lg" 
-          rounded={true}
-          shadow={true}
-        >
-          Book Your Free Class
-        </Button>
+        
+        <p>
+          Having learned English and French myself, I understand the challenges of language learning and the frustration of feeling stuck.
+        </p>
+        
+        <p class="text-xl font-semibold text-[var(--button-secondary)]">
+          My approach is 100% immersive Spanish, helping you think in Spanish from day one.
+        </p>
       </div>
     </div>
+
+
+
+    <!-- Simple CTA -->
+    <div class="text-center">
+      <h3 class="text-2xl font-satoshi font-bold text-black mb-6">
+        Ready to start your Spanish journey?
+      </h3>
+      <Button 
+        href="/schedule-class" 
+        variant="primary" 
+        size="lg" 
+        rounded={true}
+        shadow={true}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 mr-3">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M6.75 3v2.25M17.25 3v2.25M3 18.75V7.5a2.25 2.25 0 012.25-2.25h13.5A2.25 2.25 0 0121 7.5v11.25m-18 0A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75m-18 0v-7.5A2.25 2.25 0 015.25 9h13.5A2.25 2.25 0 0121 11.25v7.5" />
+        </svg>
+        Book your first class - It's FREE!
+      </Button>
+    </div>
+
   </div>
-</Layout> 
+</section>
+</Layout>
+
+<style>
+  /* Minimal styles only */
+</style>

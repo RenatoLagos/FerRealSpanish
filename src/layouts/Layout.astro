@@ -39,7 +39,7 @@ const {
 						<a href="/" class="hover:text-[var(--button-primary)] text-xl font-black">Home</a>
 						<a href="/schedule-class" class="hover:text-[var(--button-primary)] text-xl font-black">Schedule</a>
 						<a href="/about" class="hover:text-[var(--button-primary)] text-xl font-black">About me</a>
-						<a href="#contact-section" class="hover:text-[var(--button-primary)] text-xl font-black">Contact</a>
+						<a href="/#contact-section" class="hover:text-[var(--button-primary)] text-xl font-black contact-link">Contact</a>
 					</nav>
 					<button class="md:hidden p-2 rounded-md hover:text-[var(--button-primary)]">
 						<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -75,7 +75,7 @@ const {
 						<h4 class="text-lg font-semibold mb-4">Support</h4>
 						<ul class="space-y-2">
 							<li><a href="/faq" class="text-white/80 hover:text-[var(--button-secondary)]">FAQ</a></li>
-							<li><a href="#contact-section" class="text-white/80 hover:text-[var(--button-secondary)]">Contact Us</a></li>
+							<li><a href="/#contact-section" class="text-white/80 hover:text-[var(--button-secondary)]">Contact Us</a></li>
 							<li><a href="/policy" class="text-white/80 hover:text-[var(--button-secondary)]">Privacy Policy</a></li>
 						</ul>
 					</div>
@@ -105,6 +105,43 @@ const {
 				</div>
 			</div>
 		</footer>
+		<script>
+			// Script para manejar navegación inteligente a la sección de contacto
+			document.addEventListener('DOMContentLoaded', () => {
+				const contactLinks = document.querySelectorAll('a[href="/#contact-section"]');
+				
+				contactLinks.forEach(link => {
+					link.addEventListener('click', (e) => {
+						// Si estamos en la página principal, hacer scroll suave
+						if (window.location.pathname === '/') {
+							e.preventDefault();
+							const contactSection = document.getElementById('contact-section');
+							if (contactSection) {
+								contactSection.scrollIntoView({ 
+									behavior: 'smooth',
+									block: 'start'
+								});
+							}
+						}
+						// Si estamos en otra página, el enlace funcionará normalmente
+						// llevándonos a /#contact-section
+					});
+				});
+				
+				// Si llegamos a la página con #contact-section en la URL, hacer scroll
+				if (window.location.hash === '#contact-section') {
+					setTimeout(() => {
+						const contactSection = document.getElementById('contact-section');
+						if (contactSection) {
+							contactSection.scrollIntoView({ 
+								behavior: 'smooth',
+								block: 'start'
+							});
+						}
+					}, 100); // Pequeño delay para asegurar que la página esté cargada
+				}
+			});
+		</script>
 	</body>
 </html>
 
