@@ -21,20 +21,7 @@ import Button from '../components/ui/button.astro';
       <div class="bg-white rounded-xl shadow-lg overflow-hidden">
         <div class="grid grid-cols-1 lg:grid-cols-2">
           <!-- Left Column: Calendar -->
-          <div class="p-6 border-r border-gray-200">
-            <!-- Google Calendar Authentication -->
-            <div id="auth-container" class="mb-6 text-center hidden">
-              <p class="text-sm text-gray-600 mb-4">Please authorize access to Google Calendar to see real availability</p>
-              <Button 
-                variant="secondary"
-                size="sm"
-                rounded={true}
-                class="authorize-btn"
-              >
-                Authorize Google Calendar
-              </Button>
-            </div>
-            
+          <div class="p-6 border-r border-gray-200">            
             <!-- Calendar -->
             <div id="calendar" class="calendar-container">
               <!-- Calendar will be rendered here by the script -->
@@ -67,16 +54,7 @@ import Button from '../components/ui/button.astro';
               <div class="p-3 border border-gray-200 rounded-md text-center text-gray-400 text-sm">Select a date to see available times</div>
             </div>
             
-            <!-- Course Selection -->
-            <div class="mb-6">
-              <label class="block text-sm font-medium text-gray-700 mb-2">Select Course</label>
-              <select id="courseSelect" class="w-full p-3 border border-gray-300 rounded-md bg-white text-sm focus:outline-none focus:ring-2 focus:ring-[#7dd3c0]">
-                <option value="conversational">Conversational Spanish</option>
-                <option value="grammar">Grammar Spanish</option>
-                <option value="travel">Travel Spanish</option>
-                <option value="business">Business Spanish</option>
-              </select>
-            </div>
+
             
             <!-- Student Information Form -->
             <div id="studentForm" class="hidden space-y-4 mb-6 p-4 bg-gray-50 rounded-md">
@@ -145,21 +123,9 @@ import Button from '../components/ui/button.astro';
 </Layout>
 
 <script>
-  // Google Calendar API Configuration
-  const CLIENT_ID = import.meta.env.PUBLIC_GOOGLE_CLIENT_ID || 'YOUR_GOOGLE_CLIENT_ID';
-  const API_KEY = import.meta.env.PUBLIC_GOOGLE_API_KEY || 'YOUR_GOOGLE_API_KEY';
-  const DISCOVERY_DOC = 'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
-  const SCOPES = 'https://www.googleapis.com/auth/calendar https://www.googleapis.com/auth/calendar.events';
-  
-  // Teacher's calendar ID - this should be set to the teacher's calendar
-  const TEACHER_CALENDAR_ID = import.meta.env.PUBLIC_TEACHER_CALENDAR_ID || 'primary';
-  
-  let tokenClient;
-  let gapiInited = false;
-  let gisInited = false;
-  let isAuthorized = false;
-  let selectedTimeSlot = null;
-  let selectedDate = null;
+  // Calendar state variables
+  let selectedTimeSlot: any = null;
+  let selectedDate: string | null = null;
 
   document.addEventListener('DOMContentLoaded', () => {
     // Current date
@@ -173,86 +139,13 @@ import Button from '../components/ui/button.astro';
     const timeSlotsEl = document.getElementById('timeSlots');
     const loadingEl = document.getElementById('loading');
     const confirmBookingEl = document.getElementById('confirmBooking');
-    const authContainer = document.getElementById('auth-container');
     const studentForm = document.getElementById('studentForm');
     
-    // Load Google APIs
-    loadGoogleAPIs();
-    
-    function loadGoogleAPIs() {
-      // Load Google API script
-      const gapiScript = document.createElement('script');
-      gapiScript.src = 'https://apis.google.com/js/api.js';
-      gapiScript.onload = gapiLoaded;
-      document.head.appendChild(gapiScript);
-      
-      // Load Google Identity Services script
-      const gisScript = document.createElement('script');
-      gisScript.src = 'https://accounts.google.com/gsi/client';
-      gisScript.onload = gisLoaded;
-      document.head.appendChild(gisScript);
-    }
-    
-    function gapiLoaded() {
-      gapi.load('client', initializeGapiClient);
-    }
-    
-    async function initializeGapiClient() {
-      await gapi.client.init({
-        apiKey: API_KEY,
-        discoveryDocs: [DISCOVERY_DOC],
-      });
-      gapiInited = true;
-      maybeEnableButtons();
-    }
-    
-    function gisLoaded() {
-      tokenClient = google.accounts.oauth2.initTokenClient({
-        client_id: CLIENT_ID,
-        scope: SCOPES,
-        callback: (resp) => {
-          if (resp.error !== undefined) {
-            throw (resp);
-          }
-          isAuthorized = true;
-          authContainer.classList.add('hidden');
-          // Refresh the calendar with real data
-          if (selectedDate) {
-            loadAvailableTimeSlots(selectedDate);
-          }
-        },
-      });
-      gisInited = true;
-      maybeEnableButtons();
-    }
-    
-    function maybeEnableButtons() {
-      if (gapiInited && gisInited) {
-        // Check if user is already authorized
-        if (gapi.client.getToken() === null) {
-          authContainer.classList.remove('hidden');
-        } else {
-          isAuthorized = true;
-        }
-        
-        // Initialize calendar
-        renderCalendar(currentMonth, currentYear);
-        
-        // Add event listeners
-        addEventListeners();
-      }
-    }
+    // Initialize calendar and add event listeners
+    renderCalendar(currentMonth, currentYear);
+    addEventListeners();
     
     function addEventListeners() {
-      // Authorization button
-      document.querySelector('.authorize-btn')?.addEventListener('click', () => {
-        if (gapi.client.getToken() === null) {
-          tokenClient.requestAccessToken({prompt: 'consent'});
-        } else {
-          tokenClient.requestAccessToken({prompt: ''});
-        }
-      });
-      
       // Confirm booking button
       document.querySelector('.confirm-booking-btn')?.addEventListener('click', () => {
         if (selectedTimeSlot && selectedDate) {
@@ -319,7 +212,7 @@ import Button from '../components/ui/button.astro';
           </div>`;
         } else if (isToday) {
           calendarHTML += `<div class="h-8 p-1">
-            <div class="h-full flex items-center justify-center rounded-full bg-gray-200 text-gray-800 cursor-pointer date-btn text-sm" data-date="${year}-${month+1}-${day}">${day}</div>
+            <div class="h-full flex items-center justify-center rounded-full bg-gray-200 text-gray-800 cursor-pointer date-btn text-sm" data-date="${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}">${day}</div>
           </div>`;
         } else if (isWeekend) {
           calendarHTML += `<div class="h-8 p-1">
@@ -327,7 +220,7 @@ import Button from '../components/ui/button.astro';
           </div>`;
         } else {
           calendarHTML += `<div class="h-8 p-1">
-            <div class="h-full flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer date-btn text-sm text-gray-700" data-date="${year}-${month+1}-${day}">${day}</div>
+            <div class="h-full flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer date-btn text-sm text-gray-700" data-date="${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}">${day}</div>
           </div>`;
         }
       }
@@ -394,7 +287,7 @@ import Button from '../components/ui/button.astro';
       await loadAvailableTimeSlots(dateStr);
     }
     
-    // Load available time slots from Google Calendar
+    // Load available time slots from backend API
     async function loadAvailableTimeSlots(dateStr: string) {
       if (!timeSlotsEl || !loadingEl) return;
       
@@ -403,22 +296,18 @@ import Button from '../components/ui/button.astro';
       timeSlotsEl.innerHTML = '';
       
       try {
-        let availableSlots = [];
+        // Fetch availability from our backend API
+        const response = await fetch(`/api/availability?date=${dateStr}`);
+        const data = await response.json();
         
-        if (isAuthorized && gapi.client.getToken()) {
-          // Get real availability from Google Calendar
-          availableSlots = await getRealAvailability(dateStr);
-        } else {
-          // Show mock availability
-          availableSlots = getMockAvailability();
-        }
+        const availableSlots = data.availableSlots || [];
         
         // Hide loading
         loadingEl.classList.add('hidden');
         
         if (availableSlots.length > 0) {
           let slotsHTML = '';
-          availableSlots.forEach(slot => {
+          availableSlots.forEach((slot: any) => {
             const baseClasses = "p-3 rounded-md text-center text-sm cursor-pointer transition-colors time-btn";
             const stateClasses = "border border-gray-200 hover:bg-gray-50 text-gray-700";
             
@@ -450,8 +339,8 @@ import Button from '../components/ui/button.astro';
               };
               
               // Update button text and show form
-              confirmBookingEl.textContent = 'Book This Class';
-              studentForm.classList.remove('hidden');
+              if (confirmBookingEl) confirmBookingEl.textContent = 'Book This Class';
+              studentForm?.classList.remove('hidden');
             });
           });
         } else {
@@ -464,73 +353,7 @@ import Button from '../components/ui/button.astro';
       }
     }
     
-    // Get real availability from Google Calendar
-    async function getRealAvailability(dateStr: string) {
-      try {
-        const [year, month, day] = dateStr.split('-');
-        const startDate = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-        const endDate = new Date(startDate);
-        endDate.setDate(endDate.getDate() + 1);
-        
-        // Get busy times from calendar
-        const response = await gapi.client.calendar.freebusy.query({
-          'timeMin': startDate.toISOString(),
-          'timeMax': endDate.toISOString(),
-          'items': [{'id': TEACHER_CALENDAR_ID}]
-        });
-        
-        const busyTimes = response.result.calendars[TEACHER_CALENDAR_ID]?.busy || [];
-        
-        // Generate available slots (9 AM to 6 PM, excluding busy times)
-        const availableSlots = [];
-        for (let hour = 9; hour < 18; hour++) {
-          const slotStart = new Date(startDate);
-          slotStart.setHours(hour, 0, 0, 0);
-          const slotEnd = new Date(slotStart);
-          slotEnd.setHours(hour + 1, 0, 0, 0);
-          
-          // Check if this slot conflicts with busy times
-          const isAvailable = !busyTimes.some(busy => {
-            const busyStart = new Date(busy.start);
-            const busyEnd = new Date(busy.end);
-            return (slotStart < busyEnd && slotEnd > busyStart);
-          });
-          
-          if (isAvailable) {
-            availableSlots.push({
-              startTime: slotStart.toISOString(),
-              endTime: slotEnd.toISOString(),
-              displayTime: `${formatTime(slotStart)} - ${formatTime(slotEnd)}`
-            });
-          }
-        }
-        
-        return availableSlots;
-      } catch (error) {
-        console.error('Error fetching calendar data:', error);
-        return getMockAvailability();
-      }
-    }
-    
-    // Get mock availability for demo purposes
-    function getMockAvailability() {
-      return [
-        { startTime: '09:00', endTime: '10:00', displayTime: '09:00 AM - 10:00 AM' },
-        { startTime: '10:30', endTime: '11:30', displayTime: '10:30 AM - 11:30 AM' },
-        { startTime: '13:00', endTime: '14:00', displayTime: '01:00 PM - 02:00 PM' },
-        { startTime: '14:30', endTime: '15:30', displayTime: '02:30 PM - 03:30 PM' },
-        { startTime: '16:00', endTime: '17:00', displayTime: '04:00 PM - 05:00 PM' }
-      ];
-    }
-    
-    // Format time for display
-    function formatTime(date: Date) {
-      return date.toLocaleTimeString('en-US', { 
-        hour: 'numeric', 
-        minute: '2-digit',
-        hour12: true 
-      });
-    }
+
     
     // Handle booking confirmation
     async function handleBookingConfirmation() {
@@ -540,7 +363,7 @@ import Button from '../components/ui/button.astro';
       const studentEmail = (document.getElementById('studentEmail') as HTMLInputElement)?.value;
       const studentPhone = (document.getElementById('studentPhone') as HTMLInputElement)?.value;
       const spanishLevel = (document.getElementById('spanishLevel') as HTMLSelectElement)?.value;
-      const courseType = (document.getElementById('courseSelect') as HTMLSelectElement)?.value;
+      const courseType = 'conversational'; // Default course type
       
       if (!studentName || !studentEmail) {
         alert('Please fill in all required fields');
@@ -549,80 +372,53 @@ import Button from '../components/ui/button.astro';
       
       try {
         // Show loading state
-        confirmBookingEl.textContent = 'Creating booking...';
+        if (confirmBookingEl) confirmBookingEl.textContent = 'Creating booking...';
         
-        if (isAuthorized && gapi.client.getToken()) {
-          await createGoogleCalendarEvent(selectedTimeSlot, {
-            name: studentName,
-            email: studentEmail,
-            phone: studentPhone,
-            level: spanishLevel,
-            course: courseType
-          });
+        // Send booking request to our backend API
+        const response = await fetch('/api/book-class', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            date: selectedDate,
+            startTime: selectedTimeSlot.startTime,
+            endTime: selectedTimeSlot.endTime,
+            studentName,
+            studentEmail,
+            studentPhone,
+            spanishLevel,
+            courseType
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          // Show success message
+          alert('¡Booking confirmed! You will receive a confirmation email shortly with the Google Meet link.');
+          
+          // Reset form
+          resetBookingForm();
+        } else {
+          throw new Error(result.message || 'Booking failed');
         }
         
-        // Show success message
-        alert('¡Booking confirmed! You will receive a confirmation email shortly.');
-        
-        // Reset form
-        resetBookingForm();
-        
-      } catch (error) {
+      } catch (error: any) {
         console.error('Booking error:', error);
-        alert('There was an error creating your booking. Please try again or contact us directly.');
-        confirmBookingEl.textContent = 'Book This Class';
+        alert(error.message || 'There was an error creating your booking. Please try again or contact us directly.');
+        if (confirmBookingEl) confirmBookingEl.textContent = 'Book This Class';
       }
     }
     
-    // Create Google Calendar event
-    async function createGoogleCalendarEvent(timeSlot, studentInfo) {
-      const event = {
-        'summary': `Spanish Class - ${studentInfo.course} (${studentInfo.level})`,
-        'description': `Student: ${studentInfo.name}\nEmail: ${studentInfo.email}\nPhone: ${studentInfo.phone || 'Not provided'}\nLevel: ${studentInfo.level}\nCourse Type: ${studentInfo.course}`,
-        'start': {
-          'dateTime': timeSlot.startTime,
-          'timeZone': 'America/New_York', // Adjust timezone as needed
-        },
-        'end': {
-          'dateTime': timeSlot.endTime,
-          'timeZone': 'America/New_York', // Adjust timezone as needed
-        },
-        'attendees': [
-          {'email': studentInfo.email}
-        ],
-        'conferenceData': {
-          'createRequest': {
-            'requestId': 'fer-spanish-' + Date.now(),
-            'conferenceSolutionKey': {
-              'type': 'hangoutsMeet'
-            }
-          }
-        },
-        'reminders': {
-          'useDefault': false,
-          'overrides': [
-            {'method': 'email', 'minutes': 24 * 60}, // 1 day before
-            {'method': 'popup', 'minutes': 30} // 30 minutes before
-          ]
-        }
-      };
-      
-      const request = gapi.client.calendar.events.insert({
-        'calendarId': TEACHER_CALENDAR_ID,
-        'resource': event,
-        'conferenceDataVersion': 1,
-        'sendUpdates': 'all'
-      });
-      
-      return request.execute();
-    }
+
     
     // Reset booking form
     function resetBookingForm() {
       selectedTimeSlot = null;
       selectedDate = null;
-      confirmBookingEl.textContent = 'Select a time slot';
-      studentForm.classList.add('hidden');
+      if (confirmBookingEl) confirmBookingEl.textContent = 'Select a time slot';
+      studentForm?.classList.add('hidden');
       
       // Clear form fields
       ['studentName', 'studentEmail', 'studentPhone'].forEach(id => {
@@ -636,8 +432,8 @@ import Button from '../components/ui/button.astro';
       });
       
       // Reset time slots
-      timeSlotsEl.innerHTML = '<div class="p-3 border border-gray-200 rounded-md text-center text-gray-400 text-sm">Select a date to see available times</div>';
-      selectedDateEl.textContent = 'Please select a date from the calendar';
+      if (timeSlotsEl) timeSlotsEl.innerHTML = '<div class="p-3 border border-gray-200 rounded-md text-center text-gray-400 text-sm">Select a date to see available times</div>';
+      if (selectedDateEl) selectedDateEl.textContent = 'Please select a date from the calendar';
     }
     
     // Initialize calendar

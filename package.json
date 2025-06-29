@@ -9,7 +9,9 @@
     "astro": "astro"
   },
   "dependencies": {
-    "astro": "^5.7.11"
+    "@astrojs/node": "^9.2.2",
+    "astro": "^5.7.11",
+    "googleapis": "^150.0.1"
   },
   "devDependencies": {
     "@astrojs/tailwind": "^5.1.0",
