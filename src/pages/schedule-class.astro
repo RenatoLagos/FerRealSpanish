@@ -1,11 +1,15 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Button from '../components/ui/button.astro';
+
+// Clave de sitio de reCAPTCHA desde variables de entorno
+const siteKey = import.meta.env.RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"; // Fallback a clave de prueba
 ---
 
 <Layout title="Schedule Your Class - FerRealSpanish">
+  <script src="https://www.google.com/recaptcha/api.js" async defer slot="head"></script>
   <!-- Header Banner -->
-  <div class="bg-[var(--background-primary)] py-12 pt-24">
+  <div class="bg-[var(--background-primary)] py-12 pt-48">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
       <h1 class="text-3xl md:text-4xl font-satoshi font-extrabold text-gray-800 mb-4">Schedule Your Class</h1>
       <p class="text-gray-600 text-lg font-satoshi font-semibold max-w-2xl mx-auto">
@@ -15,7 +19,7 @@ import Button from '../components/ui/button.astro';
   </div>
 
   <!-- Calendar Selection -->
-  <div class="py-8 bg-[var(--background-primary)] min-h-screen">
+  <div class="py-8 bg-[var(--background-primary)] min-h-screen pb-64">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Centered Card Layout -->
       <div class="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -78,6 +82,7 @@ import Button from '../components/ui/button.astro';
                   class="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7dd3c0]"
                   placeholder="Enter your email"
                 />
+                <div id="emailError" class="hidden text-red-500 text-xs mt-1"></div>
               </div>
               <div>
                 <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
@@ -96,6 +101,13 @@ import Button from '../components/ui/button.astro';
                   <option value="intermediate">Intermediate</option>
                   <option value="advanced">Advanced</option>
                 </select>
+              </div>
+              
+              <!-- reCAPTCHA -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Human Verification</label>
+                <div class="g-recaptcha" data-sitekey={siteKey}></div>
+                <div id="captchaError" class="hidden text-red-500 text-xs mt-1"></div>
               </div>
             </div>
             
@@ -117,6 +129,49 @@ import Button from '../components/ui/button.astro';
             </div>
           </div>
         </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 transform transition-all">
+      <div class="p-6 text-center">
+        <!-- Success Icon -->
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+          <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        
+        <!-- Title -->
+        <h3 class="text-xl font-bold text-gray-900 mb-2">¡Booking Confirmed!</h3>
+        
+        <!-- Message -->
+        <p class="text-gray-600 mb-6">
+          Your class has been successfully scheduled. You will receive a confirmation email shortly with the Google Meet link and class details.
+        </p>
+        
+        <!-- Class Details -->
+        <div id="bookingDetails" class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+          <h4 class="font-semibold text-gray-800 mb-2">Class Details:</h4>
+          <div class="space-y-1 text-sm text-gray-600">
+            <div id="modalDate"></div>
+            <div id="modalTime"></div>
+            <div id="modalStudent"></div>
+          </div>
+        </div>
+        
+        <!-- Close Button -->
+        <button 
+          id="closeModal"
+          class="w-full bg-[#7dd3c0] hover:bg-[#6bc4b1] text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+        >
+          <span>Perfect!</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+          </svg>
+        </button>
       </div>
     </div>
   </div>
@@ -152,6 +207,104 @@ import Button from '../components/ui/button.astro';
           handleBookingConfirmation();
         }
       });
+
+      // Email validation
+      document.getElementById('studentEmail')?.addEventListener('blur', validateEmail);
+      
+      // Modal close
+      document.getElementById('closeModal')?.addEventListener('click', closeSuccessModal);
+      
+      // Close modal when clicking outside
+      document.getElementById('successModal')?.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+          closeSuccessModal();
+        }
+      });
+    }
+
+
+
+    // Validate email format
+    function validateEmail() {
+      const emailInput = document.getElementById('studentEmail') as HTMLInputElement;
+      const emailError = document.getElementById('emailError');
+      
+      if (!emailInput || !emailError) return true;
+      
+      const email = emailInput.value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (email && !emailRegex.test(email)) {
+        emailError.textContent = 'Please enter a valid email address';
+        emailError.classList.remove('hidden');
+        emailInput.classList.add('border-red-300');
+        return false;
+      } else {
+        emailError.classList.add('hidden');
+        emailInput.classList.remove('border-red-300');
+        return true;
+      }
+    }
+
+    // Validate reCAPTCHA
+    function validateCaptcha() {
+      const captchaError = document.getElementById('captchaError');
+      
+      if (!captchaError) return false;
+      
+      // Obtener respuesta de reCAPTCHA
+      const recaptchaResponse = (window as any).grecaptcha?.getResponse();
+      
+      if (!recaptchaResponse || recaptchaResponse.length === 0) {
+        captchaError.textContent = 'Please complete the reCAPTCHA verification.';
+        captchaError.classList.remove('hidden');
+        return false;
+      } else {
+        captchaError.classList.add('hidden');
+        return true;
+      }
+    }
+
+    // Show success modal
+    function showSuccessModal(bookingData: any) {
+      const modal = document.getElementById('successModal');
+      const modalDate = document.getElementById('modalDate');
+      const modalTime = document.getElementById('modalTime');
+      const modalStudent = document.getElementById('modalStudent');
+      
+      if (modal && modalDate && modalTime && modalStudent) {
+        // Format date
+        const [year, month, day] = bookingData.date.split('-');
+        const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        const formattedDate = date.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        
+        modalDate.textContent = `📅 ${formattedDate}`;
+        modalTime.textContent = `🕐 ${bookingData.displayTime}`;
+        modalStudent.textContent = `👤 ${bookingData.studentName}`;
+        
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    // Close success modal and redirect to landing page
+    function closeSuccessModal() {
+      const modal = document.getElementById('successModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        resetBookingForm();
+        
+        // Redirect to landing page after a short delay
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 300); // Small delay for smooth transition
+      }
     }
     
     // Render calendar
@@ -192,14 +345,14 @@ import Button from '../components/ui/button.astro';
       
       calendarHTML += '<div class="grid grid-cols-7 gap-1">';
       
-      for (let i = 0; i < firstDay; i++) {
-        calendarHTML += '<div class="h-8 p-1"></div>';
-      }
-      
       const today = new Date();
       const todayDate = today.getDate();
       const todayMonth = today.getMonth();
       const todayYear = today.getFullYear();
+      
+      for (let i = 0; i < firstDay; i++) {
+        calendarHTML += '<div class="h-8 p-1"></div>';
+      }
       
       for (let day = 1; day <= lastDate; day++) {
         const isToday = day === todayDate && month === todayMonth && year === todayYear;
@@ -365,14 +518,28 @@ import Button from '../components/ui/button.astro';
       const spanishLevel = (document.getElementById('spanishLevel') as HTMLSelectElement)?.value;
       const courseType = 'conversational'; // Default course type
       
+      // Validate all required fields
       if (!studentName || !studentEmail) {
         alert('Please fill in all required fields');
+        return;
+      }
+      
+      // Validate email format
+      if (!validateEmail()) {
+        return;
+      }
+      
+      // Validate captcha
+      if (!validateCaptcha()) {
         return;
       }
       
       try {
         // Show loading state
         if (confirmBookingEl) confirmBookingEl.textContent = 'Creating booking...';
+        
+        // Obtener respuesta de reCAPTCHA
+        const recaptchaResponse = (window as any).grecaptcha?.getResponse();
         
         // Send booking request to our backend API
         const response = await fetch('/api/book-class', {
@@ -388,18 +555,20 @@ import Button from '../components/ui/button.astro';
             studentEmail,
             studentPhone,
             spanishLevel,
-            courseType
+            courseType,
+            'g-recaptcha-response': recaptchaResponse
           })
         });
         
         const result = await response.json();
         
         if (response.ok) {
-          // Show success message
-          alert('¡Booking confirmed! You will receive a confirmation email shortly with the Google Meet link.');
-          
-          // Reset form
-          resetBookingForm();
+          // Show custom success modal instead of alert
+          showSuccessModal({
+            date: selectedDate,
+            displayTime: selectedTimeSlot.displayTime,
+            studentName: studentName
+          });
         } else {
           throw new Error(result.message || 'Booking failed');
         }
@@ -425,6 +594,15 @@ import Button from '../components/ui/button.astro';
         const element = document.getElementById(id) as HTMLInputElement;
         if (element) element.value = '';
       });
+      
+      // Reset reCAPTCHA
+      if ((window as any).grecaptcha) {
+        (window as any).grecaptcha.reset();
+      }
+      
+      // Clear validation errors
+      document.getElementById('emailError')?.classList.add('hidden');
+      document.getElementById('captchaError')?.classList.add('hidden');
       
       // Reset calendar selection
       document.querySelectorAll('.date-btn').forEach(b => {
