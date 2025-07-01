@@ -167,9 +167,8 @@ function createConfirmationEmailHTML(bookingData: any) {
             </div>
             
             <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin: 20px 0; border-radius: 5px;">
-                <h4 style="color: #92400e; margin-top: 0;">⏰ Important Reminders</h4>
+                <h4 style="color: #92400e; margin-top: 0;">📋 Important Notes</h4>
                 <p style="margin-bottom: 0; color: #92400e;">
-                    • You'll receive an email reminder 24 hours before your class<br>
                     • If you need to reschedule, please contact us at least 24 hours in advance<br>
                     • Keep this email for your records and easy access to the meeting link
                 </p>
@@ -184,6 +183,111 @@ function createConfirmationEmailHTML(bookingData: any) {
         <div class="footer">
             <p>&copy; ${new Date().getFullYear()} FerRealSpanish. All rights reserved.</p>
             <p>This email was sent to confirm your Spanish class booking.</p>
+        </div>
+    </div>
+</body>
+</html>
+`;
+}
+
+// Template del correo de notificación al profesor
+function createTeacherNotificationEmailHTML(bookingData: any) {
+  const { studentName, studentEmail, studentPhone, date, startTime, endTime, spanishLevel, courseType, meetLink } = bookingData;
+  
+  const formatDate = new Date(date).toLocaleDateString('en-US', { 
+    weekday: 'long', 
+    year: 'numeric', 
+    month: 'long', 
+    day: 'numeric' 
+  });
+  
+  const formatStartTime = new Date(startTime).toLocaleTimeString('en-US', { 
+    hour: 'numeric', 
+    minute: '2-digit',
+    hour12: true 
+  });
+  
+  const formatEndTime = new Date(endTime).toLocaleTimeString('en-US', { 
+    hour: 'numeric', 
+    minute: '2-digit',
+    hour12: true 
+  });
+
+  return `
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>New Class Booking - FerRealSpanish</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f7f9fc; }
+        .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        .header { background: linear-gradient(135deg, #7dd3c0, #6bc4b1); color: white; padding: 30px; text-align: center; }
+        .header h1 { margin: 0; font-size: 28px; font-weight: bold; }
+        .content { padding: 30px; }
+        .highlight-box { background: #f0f9ff; border-left: 4px solid #7dd3c0; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        .student-details { background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .class-details { background: #f8fafc; padding: 20px; border-radius: 8px; margin: 20px 0; }
+        .footer { background: #f8fafc; padding: 20px; text-align: center; color: #666; font-size: 14px; }
+        .emoji { font-size: 18px; }
+        .contact-info { background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin: 20px 0; border-radius: 5px; }
+        .contact-info h4 { color: #92400e; margin-top: 0; }
+        .contact-info p { color: #92400e; margin-bottom: 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎉 Nueva Clase Agendada</h1>
+            <p style="margin: 10px 0 0 0; font-size: 18px;">New Spanish Class Booking</p>
+        </div>
+        
+        <div class="content">
+            <p>¡Hola Teacher!</p>
+            
+            <p>You have a new Spanish class booking through your website! Here are the details:</p>
+            
+            <div class="highlight-box">
+                <h3 style="color: #2563eb; margin-top: 0;">📅 Class Information</h3>
+                <div class="class-details">
+                    <p><span class="emoji">📅</span> <strong>Date:</strong> ${formatDate}</p>
+                    <p><span class="emoji">🕐</span> <strong>Time:</strong> ${formatStartTime} - ${formatEndTime}</p>
+                    <p><span class="emoji">📚</span> <strong>Level:</strong> ${spanishLevel}</p>
+                    <p><span class="emoji">🎯</span> <strong>Course Type:</strong> ${courseType}</p>
+                    <p><span class="emoji">🎥</span> <strong>Meet Link:</strong> <a href="${meetLink}" style="color: #2563eb;">${meetLink}</a></p>
+                </div>
+            </div>
+            
+            <div class="contact-info">
+                <h4>👤 Student Contact Information</h4>
+                <div class="student-details">
+                    <p><strong>Name:</strong> ${studentName}</p>
+                    <p><strong>Email:</strong> <a href="mailto:${studentEmail}" style="color: #92400e;">${studentEmail}</a></p>
+                    <p><strong>Phone:</strong> ${studentPhone || 'Not provided'}</p>
+                    <p><strong>Spanish Level:</strong> ${spanishLevel}</p>
+                </div>
+            </div>
+            
+            <div class="highlight-box">
+                <h3 style="color: #059669; margin-top: 0;">📋 Next Steps</h3>
+                <ul style="padding-left: 0; list-style: none;">
+                    <li style="padding: 8px 0;">✓ The class has been added to your Google Calendar</li>
+                    <li style="padding: 8px 0;">✓ Student received confirmation email with meeting details</li>
+                    <li style="padding: 8px 0;">✓ Automatic reminders are set for 24h and 1h before class</li>
+                    <li style="padding: 8px 0;">✓ You can contact the student directly using the info above</li>
+                </ul>
+            </div>
+            
+            <p>The student has been sent a confirmation email with all the class details and Google Meet information.</p>
+            
+            <p>¡Que tengas una excelente clase!<br>
+            <strong>FerRealSpanish System</strong> 🚀</p>
+        </div>
+        
+        <div class="footer">
+            <p>&copy; ${new Date().getFullYear()} FerRealSpanish. All rights reserved.</p>
+            <p>This email was automatically generated when a student booked a class.</p>
         </div>
     </div>
 </body>
@@ -285,6 +389,11 @@ export const POST: APIRoute = async ({ request }) => {
 
 📧 IMPORTANT: Confirmation email with Google Meet link sent to student automatically.
 
+⏰ AUTOMATIC REMINDERS SET:
+• Email reminder 24 hours before class
+• Email reminder 1 hour before class  
+• Calendar notifications at 1 hour and 15 minutes before
+
 🎥 GOOGLE MEET INSTRUCTIONS: ${meetInstructions}
       `.trim(),
       start: {
@@ -311,8 +420,10 @@ export const POST: APIRoute = async ({ request }) => {
       reminders: {
         useDefault: false,
         overrides: [
-          { method: 'email', minutes: 24 * 60 }, // 1 día antes
-          { method: 'popup', minutes: 30 } // 30 minutos antes
+          { method: 'email', minutes: 24 * 60 }, // 1 día antes por email
+          { method: 'email', minutes: 60 }, // 1 hora antes por email
+          { method: 'popup', minutes: 60 }, // 1 hora antes popup/notificación
+          { method: 'popup', minutes: 15 } // 15 minutos antes popup adicional
         ]
       },
       guestsCanModify: false,
@@ -371,6 +482,49 @@ FerRealSpanish Team
     } catch (emailError) {
       console.error('Error sending confirmation email:', emailError);
       // No fallar la reserva si el email falla, pero log el error
+    }
+
+    // Enviar correo de notificación al profesor
+    try {
+      const teacherEmailData = {
+        studentName,
+        studentEmail,
+        studentPhone: bookingData.studentPhone || 'Not provided',
+        date,
+        startTime,
+        endTime,
+        spanishLevel,
+        courseType,
+        meetLink
+      };
+
+      await resend.emails.send({
+        from: `FerRealSpanish System <${import.meta.env.FROM_EMAIL || 'onboarding@resend.dev'}>`,
+        to: ['ferrealspanish@gmail.com'],
+        subject: `🎯 Nueva Clase Agendada - ${studentName} (${new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })})`,
+        html: createTeacherNotificationEmailHTML(teacherEmailData),
+        text: `
+Nueva clase agendada!
+
+Estudiante: ${studentName}
+Email: ${studentEmail}
+Teléfono: ${bookingData.studentPhone || 'No proporcionado'}
+
+Fecha: ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+Hora: ${formatTime(new Date(startTime))} - ${formatTime(new Date(endTime))}
+Nivel: ${spanishLevel}
+
+El estudiante ha recibido un email de confirmación con los detalles de la clase.
+La clase ha sido añadida a tu Google Calendar.
+
+FerRealSpanish System
+        `.trim()
+      });
+
+      console.log('Teacher notification email sent successfully to: ferrealspanish@gmail.com');
+    } catch (teacherEmailError) {
+      console.error('Error sending teacher notification email:', teacherEmailError);
+      // Log el error pero no fallar la reserva
     }
 
     return new Response(JSON.stringify({

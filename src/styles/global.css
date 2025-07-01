@@ -11,6 +11,9 @@
         --button-primary: #EC4845;
         --button-secondary: #1A9988;
         --footer-background: #1A9988;
+        --accent: #75BDA9;
+        --accent-dark: #5A9B88;
+        --border: #d1d5db;
     }
       
     body {

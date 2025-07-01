@@ -185,8 +185,14 @@ const siteKey = import.meta.env.RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71U
   document.addEventListener('DOMContentLoaded', () => {
     // Current date
     const currentDate = new Date();
-    let currentMonth = currentDate.getMonth();
-    let currentYear = currentDate.getFullYear();
+    
+    // Calcular el primer día disponible (mañana)
+    const tomorrow = new Date();
+    tomorrow.setDate(currentDate.getDate() + 1);
+    
+    // Inicializar el calendario en el mes del primer día disponible
+    let currentMonth = tomorrow.getMonth();
+    let currentYear = tomorrow.getFullYear();
     
     // Elements
     const calendarEl = document.getElementById('calendar');
@@ -356,16 +362,12 @@ const siteKey = import.meta.env.RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71U
       
       for (let day = 1; day <= lastDate; day++) {
         const isToday = day === todayDate && month === todayMonth && year === todayYear;
-        const isPast = new Date(year, month, day) < new Date(todayYear, todayMonth, todayDate);
+        const isPast = new Date(year, month, day) <= new Date(todayYear, todayMonth, todayDate); // Incluye el día actual como no disponible
         const isWeekend = new Date(year, month, day).getDay() === 0 || new Date(year, month, day).getDay() === 6;
         
-        if (isPast) {
+        if (isPast || isToday) {
           calendarHTML += `<div class="h-8 p-1">
             <div class="h-full flex items-center justify-center text-gray-300 text-sm">${day}</div>
-          </div>`;
-        } else if (isToday) {
-          calendarHTML += `<div class="h-8 p-1">
-            <div class="h-full flex items-center justify-center rounded-full bg-gray-200 text-gray-800 cursor-pointer date-btn text-sm" data-date="${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}">${day}</div>
           </div>`;
         } else if (isWeekend) {
           calendarHTML += `<div class="h-8 p-1">
