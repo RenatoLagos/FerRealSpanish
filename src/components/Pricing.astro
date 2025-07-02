@@ -110,24 +110,57 @@ const pricingPlans: PricingPlan[] = [
     </div>
 
     <div class="flex justify-center gap-3 mb-12">
-      <Button 
-          variant="secondary" 
-          size="lg" 
-          rounded={true}
-      >
-          Normal
-      </Button>
-      <Button 
-          variant="primary" 
-          size="lg" 
-          rounded={true}
-          shadow={true}
-      >
-          Intensive
-      </Button>
+      <div class="normal-button-container relative" id="normal-container">
+        <Button 
+            variant="secondary" 
+            size="lg" 
+            rounded={true}
+            class="normal-button transition-all duration-300 hover:scale-105"
+        >
+            Normal
+        </Button>
+        <div class="normal-description absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-lg border-2 border-gray-200 shadow-md opacity-0 scale-95 transition-all duration-300 whitespace-nowrap">
+          <span class="text-sm font-semibold text-gray-700">2 times per week</span>
+        </div>
+      </div>
+      <div class="intensive-button-container relative" id="intensive-container">
+        <Button 
+            variant="primary" 
+            size="lg" 
+            rounded={true}
+            shadow={true}
+            class="intensive-button transition-all duration-300 hover:scale-105"
+        >
+            Intensive
+        </Button>
+        <div class="intensive-description absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-lg border-2 border-gray-200 shadow-md opacity-0 scale-95 transition-all duration-300 whitespace-nowrap">
+          <span class="text-sm font-semibold text-gray-700">3+ times per week</span>
+        </div>
+      </div>
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
+    <!-- Intensive Program Message (initially hidden) -->
+    <div id="intensive-message" class="hidden grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 transition-all duration-500 transform scale-95 opacity-0 mb-24">
+      <div class="lg:col-span-4 md:col-span-2 col-span-1 bg-white rounded-2xl p-8 border-4 border-gray-300 shadow-[6px_6px_0px_0px_#6b7280] text-center flex flex-col justify-center min-h-[400px]">
+        <h3 class="text-3xl font-satoshi font-extrabold mb-6 text-gray-700">Intensive Program</h3>
+        <p class="text-lg font-satoshi text-gray-700 mb-8 leading-relaxed max-w-3xl mx-auto">
+          To take intensive classes (3 or more times per week), a meeting is required to discuss the student's needs and go over pricing. This allows us to create a personalized program that fits their goals and ensures meaningful progress.
+        </p>
+        <div class="flex justify-center">
+          <Button 
+            variant="primary" 
+            size="lg" 
+            rounded={true}
+            shadow={true}
+            href="/schedule-class"
+          >
+            Schedule Free Class
+          </Button>
+        </div>
+      </div>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="pricing-cards">
       {pricingPlans.map((plan) => (
         <div class={`bg-white rounded-2xl p-6 border-4 border-gray-200 transition-all duration-200 hover:-translate-y-1 relative flex flex-col ${plan.popular ? 'shadow-[6px_6px_0px_0px_#000000] border-4 border-[var(--button-primary)]' : 'shadow-[6px_6px_0px_0px_#000000]'}`}>
           
@@ -188,3 +221,128 @@ const pricingPlans: PricingPlan[] = [
     </div>
   </div>
 </section>
+
+<style>
+  .normal-button-container:hover .normal-button {
+    transform: scale(1.1);
+  }
+  
+  .normal-button-container:hover .normal-description {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  
+  .intensive-button-container:hover .intensive-button {
+    transform: scale(1.1);
+  }
+  
+  .intensive-button-container:hover .intensive-description {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+  
+  .normal-description,
+  .intensive-description {
+    z-index: 10;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+  
+  .normal-description::before,
+  .intensive-description::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #e5e7eb;
+  }
+  
+  .normal-description::after,
+  .intensive-description::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid white;
+    }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const intensiveContainer = document.getElementById('intensive-container');
+    const normalContainer = document.getElementById('normal-container');
+    const intensiveMessage = document.getElementById('intensive-message');
+    const pricingCards = document.getElementById('pricing-cards');
+    
+    // Handle intensive button click
+    if (intensiveContainer) {
+      const intensiveButton = intensiveContainer.querySelector('.intensive-button');
+      if (intensiveButton) {
+        intensiveButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Hide pricing cards with fade out
+          if (pricingCards) {
+            pricingCards.style.transition = 'all 0.5s ease-out';
+            pricingCards.style.opacity = '0';
+            pricingCards.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+              pricingCards.style.display = 'none';
+              
+              // Show intensive message
+              if (intensiveMessage) {
+                intensiveMessage.classList.remove('hidden');
+                setTimeout(() => {
+                  intensiveMessage.style.opacity = '1';
+                  intensiveMessage.style.transform = 'scale(1)';
+                }, 50);
+              }
+            }, 500);
+          }
+        });
+      }
+    }
+    
+    // Handle normal button click
+    if (normalContainer) {
+      const normalButton = normalContainer.querySelector('.normal-button');
+      if (normalButton) {
+        normalButton.addEventListener('click', function(e) {
+          e.preventDefault();
+          
+          // Hide intensive message if visible
+          if (intensiveMessage && !intensiveMessage.classList.contains('hidden')) {
+            intensiveMessage.style.transition = 'all 0.5s ease-out';
+            intensiveMessage.style.opacity = '0';
+            intensiveMessage.style.transform = 'scale(0.95)';
+            
+            setTimeout(() => {
+              intensiveMessage.classList.add('hidden');
+              
+              // Show pricing cards
+              if (pricingCards) {
+                pricingCards.style.display = 'grid';
+                setTimeout(() => {
+                  pricingCards.style.opacity = '1';
+                  pricingCards.style.transform = 'scale(1)';
+                }, 50);
+              }
+            }, 500);
+          }
+        });
+      }
+    }
+  });
+</script>
+
+ 
