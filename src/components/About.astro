@@ -1,0 +1,62 @@
+---
+import Button from './ui/button.astro';
+---
+
+<!-- Minimalist About Section -->
+<section id="about-section" class="py-20 bg-[var(--background-secondary)]">
+  <div class="max-w-3xl mx-auto px-6 text-center">
+    
+    <!-- Simple Header -->
+    <h1 class="text-6xl font-satoshi font-extrabold text-white mb-8">
+      <div class="svg-container">
+        <div class="text-white font-satoshi font-extrabold">About Me</div>
+        <svg viewBox="0 0 300 100" preserveAspectRatio="none">
+          <ellipse cx="150" cy="45" rx="145" ry="40" fill="none" stroke="#ffffff" stroke-width="1.2" transform="rotate(0 150 40)" />
+          <ellipse cx="150" cy="40" rx="145" ry="40" fill="none" stroke="#ffffff" stroke-width="1.2" transform="rotate(-8 150 40)" />
+        </svg>
+      </div>
+    </h1>
+
+    <!-- Main Photo -->
+    <div class="mb-8">
+      <img 
+        src="/Best photos Fer/IMG_3363.JPEG" 
+        alt="Fernanda, Spanish teacher" 
+        class="w-60 h-60 md:w-72 md:h-72 rounded-full object-cover mx-auto"
+      />
+    </div>
+
+    <!-- Simple Bio -->
+    <div class="max-w-xl mx-auto space-y-4 mb-8">
+      <h2 class="text-2xl md:text-3xl font-satoshi font-bold text-white">
+        ¡Hola! I'm Fernanda
+      </h2>
+      
+      <p class="text-lg font-bold text-white leading-relaxed max-w-2xl mx-auto">
+        I'm a Spanish teacher from Chile with 5+ years of experience. Having learned English and French myself, I understand the challenges of language learning.
+      </p>
+      
+      <p class="text-lg font-extrabold text-white bg-[var(--button-primary)] px-4 py-2 rounded-lg inline-block">
+        My approach: 100% immersive Spanish from day one.
+      </p>
+    </div>
+
+  </div>
+</section>
+
+<style>
+  .svg-container {
+    position: relative;
+    display: inline-block;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+  }
+
+  .svg-container svg {
+    position: absolute;
+    top: 0;
+    left: -30px;
+    right: -30px;
+    pointer-events: none;
+  }
+</style> 
