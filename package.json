@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@astrojs/node": "^9.2.2",
+    "@astrojs/vercel": "^8.2.1",
     "astro": "^5.7.11",
     "googleapis": "^150.0.1",
     "resend": "^4.6.0"
