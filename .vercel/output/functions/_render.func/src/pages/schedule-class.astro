@@ -1,0 +1,628 @@
+---
+import Layout from '../layouts/Layout.astro';
+import Button from '../components/ui/button.astro';
+
+// Clave de sitio de reCAPTCHA desde variables de entorno
+const siteKey = import.meta.env.RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"; // Fallback a clave de prueba
+---
+
+<Layout title="Schedule Your Class - FerRealSpanish">
+  <script src="https://www.google.com/recaptcha/api.js" async defer slot="head"></script>
+  <!-- Header Banner -->
+  <div class="bg-[var(--background-primary)] py-12 pt-48">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <h1 class="text-3xl md:text-4xl font-satoshi font-extrabold text-gray-800 mb-4">Schedule Your Class</h1>
+      <p class="text-gray-600 text-lg font-satoshi font-semibold max-w-2xl mx-auto">
+        Select a date and time that works best for you. Our expert instructors are ready to guide you on your learning journey.
+      </p>
+    </div>
+  </div>
+
+  <!-- Calendar Selection -->
+  <div class="py-8 bg-[var(--background-primary)] min-h-screen pb-64">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+      <!-- Centered Card Layout -->
+      <div class="bg-white rounded-xl shadow-lg overflow-hidden">
+        <div class="grid grid-cols-1 lg:grid-cols-2">
+          <!-- Left Column: Calendar -->
+          <div class="p-6 border-r border-gray-200">            
+            <!-- Calendar -->
+            <div id="calendar" class="calendar-container">
+              <!-- Calendar will be rendered here by the script -->
+            </div>
+          </div>
+          
+          <!-- Right Column: Available Times -->
+          <div class="p-6">
+            <h3 class="text-lg font-semibold mb-4 text-gray-800">Available Time Slots</h3>
+            
+            <!-- Selected Date Display -->
+            <div id="selectedDate" class="text-sm font-medium mb-4 text-gray-600">
+              Please select a date from the calendar
+            </div>
+            
+            <!-- Loading indicator -->
+            <div id="loading" class="hidden text-center py-4">
+              <div class="inline-flex items-center px-4 py-2 font-semibold leading-6 text-sm shadow rounded-md text-white bg-[#7dd3c0] hover:bg-[#6bc4b1] transition ease-in-out duration-150">
+                <svg class="animate-spin -ml-1 mr-3 h-5 w-5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                  <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                  <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                </svg>
+                Loading available times...
+              </div>
+            </div>
+            
+            <!-- Available Time Slots -->
+            <div id="timeSlots" class="space-y-2 mb-6">
+              <!-- Time slots will be populated by the script -->
+              <div class="p-3 border border-gray-200 rounded-md text-center text-gray-400 text-sm">Select a date to see available times</div>
+            </div>
+            
+
+            
+            <!-- Student Information Form -->
+            <div id="studentForm" class="hidden space-y-4 mb-6 p-4 bg-gray-50 rounded-md">
+              <h4 class="font-medium text-gray-800">Student Information</h4>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Full Name</label>
+                <input 
+                  type="text" 
+                  id="studentName" 
+                  required
+                  class="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7dd3c0]"
+                  placeholder="Enter your full name"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Email Address</label>
+                <input 
+                  type="email" 
+                  id="studentEmail" 
+                  required
+                  class="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7dd3c0]"
+                  placeholder="Enter your email"
+                />
+                <div id="emailError" class="hidden text-red-500 text-xs mt-1"></div>
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Phone Number (Optional)</label>
+                <input 
+                  type="tel" 
+                  id="studentPhone" 
+                  class="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7dd3c0]"
+                  placeholder="Enter your phone number"
+                />
+              </div>
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-1">Spanish Level</label>
+                <select id="spanishLevel" class="w-full p-2 border border-gray-300 rounded-md text-sm focus:outline-none focus:ring-2 focus:ring-[#7dd3c0]">
+                  <option value="beginner">Beginner</option>
+                  <option value="elementary">Elementary</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </select>
+              </div>
+              
+              <!-- reCAPTCHA -->
+              <div>
+                <label class="block text-sm font-medium text-gray-700 mb-2">Human Verification</label>
+                <div class="g-recaptcha" data-sitekey={siteKey}></div>
+                <div id="captchaError" class="hidden text-red-500 text-xs mt-1"></div>
+              </div>
+            </div>
+            
+            <!-- Booking Form -->
+            <div id="bookingForm" class="space-y-4">
+              <Button 
+                variant="primary"
+                size="lg"
+                textSize="sm"
+                fullWidth={true}
+                rounded={true}
+                class="confirm-booking-btn"
+              >
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                </svg>
+                <span id="confirmBooking">Select a time slot</span>
+              </Button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Success Modal -->
+  <div id="successModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+    <div class="bg-white rounded-xl shadow-2xl max-w-md w-full mx-4 transform transition-all">
+      <div class="p-6 text-center">
+        <!-- Success Icon -->
+        <div class="mx-auto flex items-center justify-center h-16 w-16 rounded-full bg-green-100 mb-4">
+          <svg class="h-8 w-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+          </svg>
+        </div>
+        
+        <!-- Title -->
+        <h3 class="text-xl font-bold text-gray-900 mb-2">¡Booking Confirmed!</h3>
+        
+        <!-- Message -->
+        <p class="text-gray-600 mb-6">
+          Your class has been successfully scheduled. You will receive a confirmation email shortly with the Google Meet link and class details.
+        </p>
+        
+        <!-- Class Details -->
+        <div id="bookingDetails" class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+          <h4 class="font-semibold text-gray-800 mb-2">Class Details:</h4>
+          <div class="space-y-1 text-sm text-gray-600">
+            <div id="modalDate"></div>
+            <div id="modalTime"></div>
+            <div id="modalStudent"></div>
+          </div>
+        </div>
+        
+        <!-- Close Button -->
+        <button 
+          id="closeModal"
+          class="w-full bg-[#7dd3c0] hover:bg-[#6bc4b1] text-white font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center space-x-2"
+        >
+          <span>Perfect!</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+  </div>
+</Layout>
+
+<script>
+  // Calendar state variables
+  let selectedTimeSlot: any = null;
+  let selectedDate: string | null = null;
+
+  document.addEventListener('DOMContentLoaded', () => {
+    // Current date
+    const currentDate = new Date();
+    
+    // Calcular el primer día disponible (mañana)
+    const tomorrow = new Date();
+    tomorrow.setDate(currentDate.getDate() + 1);
+    
+    // Inicializar el calendario en el mes del primer día disponible
+    let currentMonth = tomorrow.getMonth();
+    let currentYear = tomorrow.getFullYear();
+    
+    // Elements
+    const calendarEl = document.getElementById('calendar');
+    const selectedDateEl = document.getElementById('selectedDate');
+    const timeSlotsEl = document.getElementById('timeSlots');
+    const loadingEl = document.getElementById('loading');
+    const confirmBookingEl = document.getElementById('confirmBooking');
+    const studentForm = document.getElementById('studentForm');
+    
+    // Initialize calendar and add event listeners
+    renderCalendar(currentMonth, currentYear);
+    addEventListeners();
+    
+    function addEventListeners() {
+      // Confirm booking button
+      document.querySelector('.confirm-booking-btn')?.addEventListener('click', () => {
+        if (selectedTimeSlot && selectedDate) {
+          handleBookingConfirmation();
+        }
+      });
+
+      // Email validation
+      document.getElementById('studentEmail')?.addEventListener('blur', validateEmail);
+      
+      // Modal close
+      document.getElementById('closeModal')?.addEventListener('click', closeSuccessModal);
+      
+      // Close modal when clicking outside
+      document.getElementById('successModal')?.addEventListener('click', (e) => {
+        if (e.target === e.currentTarget) {
+          closeSuccessModal();
+        }
+      });
+    }
+
+
+
+    // Validate email format
+    function validateEmail() {
+      const emailInput = document.getElementById('studentEmail') as HTMLInputElement;
+      const emailError = document.getElementById('emailError');
+      
+      if (!emailInput || !emailError) return true;
+      
+      const email = emailInput.value.trim();
+      const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+      
+      if (email && !emailRegex.test(email)) {
+        emailError.textContent = 'Please enter a valid email address';
+        emailError.classList.remove('hidden');
+        emailInput.classList.add('border-red-300');
+        return false;
+      } else {
+        emailError.classList.add('hidden');
+        emailInput.classList.remove('border-red-300');
+        return true;
+      }
+    }
+
+    // Validate reCAPTCHA
+    function validateCaptcha() {
+      const captchaError = document.getElementById('captchaError');
+      
+      if (!captchaError) return false;
+      
+      // Obtener respuesta de reCAPTCHA
+      const recaptchaResponse = (window as any).grecaptcha?.getResponse();
+      
+      if (!recaptchaResponse || recaptchaResponse.length === 0) {
+        captchaError.textContent = 'Please complete the reCAPTCHA verification.';
+        captchaError.classList.remove('hidden');
+        return false;
+      } else {
+        captchaError.classList.add('hidden');
+        return true;
+      }
+    }
+
+    // Show success modal
+    function showSuccessModal(bookingData: any) {
+      const modal = document.getElementById('successModal');
+      const modalDate = document.getElementById('modalDate');
+      const modalTime = document.getElementById('modalTime');
+      const modalStudent = document.getElementById('modalStudent');
+      
+      if (modal && modalDate && modalTime && modalStudent) {
+        // Format date
+        const [year, month, day] = bookingData.date.split('-');
+        const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        const formattedDate = date.toLocaleDateString('en-US', { 
+          weekday: 'long', 
+          year: 'numeric', 
+          month: 'long', 
+          day: 'numeric' 
+        });
+        
+        modalDate.textContent = `📅 ${formattedDate}`;
+        modalTime.textContent = `🕐 ${bookingData.displayTime}`;
+        modalStudent.textContent = `👤 ${bookingData.studentName}`;
+        
+        modal.classList.remove('hidden');
+        document.body.style.overflow = 'hidden';
+      }
+    }
+
+    // Close success modal and redirect to landing page
+    function closeSuccessModal() {
+      const modal = document.getElementById('successModal');
+      if (modal) {
+        modal.classList.add('hidden');
+        document.body.style.overflow = 'auto';
+        resetBookingForm();
+        
+        // Redirect to landing page after a short delay
+        setTimeout(() => {
+          window.location.href = '/';
+        }, 300); // Small delay for smooth transition
+      }
+    }
+    
+    // Render calendar
+    function renderCalendar(month: number, year: number) {
+      const monthNames = ["January", "February", "March", "April", "May", "June",
+        "July", "August", "September", "October", "November", "December"];
+      
+      const firstDay = new Date(year, month, 1).getDay();
+      const lastDate = new Date(year, month + 1, 0).getDate();
+      
+      let calendarHTML = `
+        <div class="flex justify-between items-center mb-6">
+          <button id="prevMonth" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+            </svg>
+          </button>
+          <div class="text-lg font-semibold text-gray-800">${monthNames[month]} ${year}</div>
+          <button id="nextMonth" class="p-2 hover:bg-gray-100 rounded-full transition-colors">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 h-5">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+            </svg>
+          </button>
+        </div>
+      `;
+      
+      calendarHTML += `
+        <div class="grid grid-cols-7 gap-1 mb-2">
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Su</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Mo</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Tu</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">We</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Th</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Fr</div>
+          <div class="text-center text-xs font-medium text-gray-500 py-2">Sa</div>
+        </div>
+      `;
+      
+      calendarHTML += '<div class="grid grid-cols-7 gap-1">';
+      
+      const today = new Date();
+      const todayDate = today.getDate();
+      const todayMonth = today.getMonth();
+      const todayYear = today.getFullYear();
+      
+      for (let i = 0; i < firstDay; i++) {
+        calendarHTML += '<div class="h-8 p-1"></div>';
+      }
+      
+      for (let day = 1; day <= lastDate; day++) {
+        const isToday = day === todayDate && month === todayMonth && year === todayYear;
+        const isPast = new Date(year, month, day) <= new Date(todayYear, todayMonth, todayDate); // Incluye el día actual como no disponible
+        const isWeekend = new Date(year, month, day).getDay() === 0 || new Date(year, month, day).getDay() === 6;
+        
+        if (isPast || isToday) {
+          calendarHTML += `<div class="h-8 p-1">
+            <div class="h-full flex items-center justify-center text-gray-300 text-sm">${day}</div>
+          </div>`;
+        } else if (isWeekend) {
+          calendarHTML += `<div class="h-8 p-1">
+            <div class="h-full flex items-center justify-center text-gray-400 text-sm">${day}</div>
+          </div>`;
+        } else {
+          calendarHTML += `<div class="h-8 p-1">
+            <div class="h-full flex items-center justify-center rounded-full hover:bg-gray-100 cursor-pointer date-btn text-sm text-gray-700" data-date="${year}-${String(month+1).padStart(2, '0')}-${String(day).padStart(2, '0')}">${day}</div>
+          </div>`;
+        }
+      }
+      
+      calendarHTML += '</div>';
+      
+      if (calendarEl) {
+        calendarEl.innerHTML = calendarHTML;
+        
+        // Navigation event listeners
+        document.getElementById('prevMonth')?.addEventListener('click', () => {
+          if (month === 0) {
+            month = 11;
+            year--;
+          } else {
+            month--;
+          }
+          renderCalendar(month, year);
+        });
+        
+        document.getElementById('nextMonth')?.addEventListener('click', () => {
+          if (month === 11) {
+            month = 0;
+            year++;
+          } else {
+            month++;
+          }
+          renderCalendar(month, year);
+        });
+        
+        // Date selection event listeners
+        document.querySelectorAll('.date-btn').forEach(btn => {
+          btn.addEventListener('click', (e) => {
+            document.querySelectorAll('.date-btn').forEach(b => {
+              b.classList.remove('bg-[#7dd3c0]', 'text-white');
+              b.classList.add('hover:bg-gray-100');
+            });
+            
+            const target = e.target as HTMLElement;
+            target.classList.add('bg-[#7dd3c0]', 'text-white');
+            target.classList.remove('hover:bg-gray-100');
+            
+            const dateStr = target.getAttribute('data-date');
+            if (dateStr) {
+              selectDate(dateStr);
+            }
+          });
+        });
+      }
+    }
+    
+    // Select a date and load available time slots
+    async function selectDate(dateStr: string) {
+      selectedDate = dateStr;
+      
+      if (selectedDateEl) {
+        const [year, month, day] = dateStr.split('-');
+        const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
+        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' } as const;
+        const formattedDate = date.toLocaleDateString('en-US', options);
+        selectedDateEl.textContent = formattedDate;
+      }
+      
+      await loadAvailableTimeSlots(dateStr);
+    }
+    
+    // Load available time slots from backend API
+    async function loadAvailableTimeSlots(dateStr: string) {
+      if (!timeSlotsEl || !loadingEl) return;
+      
+      // Show loading
+      loadingEl.classList.remove('hidden');
+      timeSlotsEl.innerHTML = '';
+      
+      try {
+        // Fetch availability from our backend API
+        const response = await fetch(`/api/availability?date=${dateStr}`);
+        const data = await response.json();
+        
+        const availableSlots = data.availableSlots || [];
+        
+        // Hide loading
+        loadingEl.classList.add('hidden');
+        
+        if (availableSlots.length > 0) {
+          let slotsHTML = '';
+          availableSlots.forEach((slot: any) => {
+            const baseClasses = "p-3 rounded-md text-center text-sm cursor-pointer transition-colors time-btn";
+            const stateClasses = "border border-gray-200 hover:bg-gray-50 text-gray-700";
+            
+            slotsHTML += `
+              <div class="${baseClasses} ${stateClasses}" data-time="${slot.startTime}-${slot.endTime}" data-start="${slot.startTime}" data-end="${slot.endTime}">
+                ${slot.displayTime}
+              </div>
+            `;
+          });
+          timeSlotsEl.innerHTML = slotsHTML;
+          
+          // Add time slot selection listeners
+          document.querySelectorAll('.time-btn').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+              document.querySelectorAll('.time-btn').forEach(b => {
+                b.classList.remove('bg-[#7dd3c0]', 'text-white');
+                b.classList.add('border', 'border-gray-200', 'hover:bg-gray-50', 'text-gray-700');
+              });
+              
+              const target = e.target as HTMLElement;
+              target.classList.add('bg-[#7dd3c0]', 'text-white');
+              target.classList.remove('border', 'border-gray-200', 'hover:bg-gray-50', 'text-gray-700');
+              
+              selectedTimeSlot = {
+                date: selectedDate,
+                startTime: target.getAttribute('data-start'),
+                endTime: target.getAttribute('data-end'),
+                displayTime: target.textContent
+              };
+              
+              // Update button text and show form
+              if (confirmBookingEl) confirmBookingEl.textContent = 'Book This Class';
+              studentForm?.classList.remove('hidden');
+            });
+          });
+        } else {
+          timeSlotsEl.innerHTML = '<div class="text-center p-4 border border-gray-200 rounded-md text-gray-400">No available times for this date</div>';
+        }
+      } catch (error) {
+        console.error('Error loading time slots:', error);
+        loadingEl.classList.add('hidden');
+        timeSlotsEl.innerHTML = '<div class="text-center p-4 border border-red-200 rounded-md text-red-400">Error loading availability. Please try again.</div>';
+      }
+    }
+    
+
+    
+    // Handle booking confirmation
+    async function handleBookingConfirmation() {
+      if (!selectedTimeSlot) return;
+      
+      const studentName = (document.getElementById('studentName') as HTMLInputElement)?.value;
+      const studentEmail = (document.getElementById('studentEmail') as HTMLInputElement)?.value;
+      const studentPhone = (document.getElementById('studentPhone') as HTMLInputElement)?.value;
+      const spanishLevel = (document.getElementById('spanishLevel') as HTMLSelectElement)?.value;
+      const courseType = 'conversational'; // Default course type
+      
+      // Validate all required fields
+      if (!studentName || !studentEmail) {
+        alert('Please fill in all required fields');
+        return;
+      }
+      
+      // Validate email format
+      if (!validateEmail()) {
+        return;
+      }
+      
+      // Validate captcha
+      if (!validateCaptcha()) {
+        return;
+      }
+      
+      try {
+        // Show loading state
+        if (confirmBookingEl) confirmBookingEl.textContent = 'Creating booking...';
+        
+        // Obtener respuesta de reCAPTCHA
+        const recaptchaResponse = (window as any).grecaptcha?.getResponse();
+        
+        // Send booking request to our backend API
+        const response = await fetch('/api/book-class', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            date: selectedDate,
+            startTime: selectedTimeSlot.startTime,
+            endTime: selectedTimeSlot.endTime,
+            studentName,
+            studentEmail,
+            studentPhone,
+            spanishLevel,
+            courseType,
+            'g-recaptcha-response': recaptchaResponse
+          })
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+          // Show custom success modal instead of alert
+          showSuccessModal({
+            date: selectedDate,
+            displayTime: selectedTimeSlot.displayTime,
+            studentName: studentName
+          });
+        } else {
+          throw new Error(result.message || 'Booking failed');
+        }
+        
+      } catch (error: any) {
+        console.error('Booking error:', error);
+        alert(error.message || 'There was an error creating your booking. Please try again or contact us directly.');
+        if (confirmBookingEl) confirmBookingEl.textContent = 'Book This Class';
+      }
+    }
+    
+
+    
+    // Reset booking form
+    function resetBookingForm() {
+      selectedTimeSlot = null;
+      selectedDate = null;
+      if (confirmBookingEl) confirmBookingEl.textContent = 'Select a time slot';
+      studentForm?.classList.add('hidden');
+      
+      // Clear form fields
+      ['studentName', 'studentEmail', 'studentPhone'].forEach(id => {
+        const element = document.getElementById(id) as HTMLInputElement;
+        if (element) element.value = '';
+      });
+      
+      // Reset reCAPTCHA
+      if ((window as any).grecaptcha) {
+        (window as any).grecaptcha.reset();
+      }
+      
+      // Clear validation errors
+      document.getElementById('emailError')?.classList.add('hidden');
+      document.getElementById('captchaError')?.classList.add('hidden');
+      
+      // Reset calendar selection
+      document.querySelectorAll('.date-btn').forEach(b => {
+        b.classList.remove('bg-[#7dd3c0]', 'text-white');
+      });
+      
+      // Reset time slots
+      if (timeSlotsEl) timeSlotsEl.innerHTML = '<div class="p-3 border border-gray-200 rounded-md text-center text-gray-400 text-sm">Select a date to see available times</div>';
+      if (selectedDateEl) selectedDateEl.textContent = 'Please select a date from the calendar';
+    }
+    
+    // Initialize calendar
+    renderCalendar(currentMonth, currentYear);
+  });
+</script>
+
+<style>
+  .calendar-container {
+    user-select: none;
+  }
+</style> 
