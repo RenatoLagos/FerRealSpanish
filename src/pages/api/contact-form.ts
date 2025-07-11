@@ -106,7 +106,7 @@ function createContactEmailHTML(data: ContactFormData) {
         
         <div class="footer">
             <p>&copy; ${new Date().getFullYear()} FerRealSpanish. All rights reserved.</p>
-            <p>Este email fue generado automáticamente desde tu formulario de contacto.</p>
+            <p>This email was automatically generated from your contact form.</p>
         </div>
     </div>
 </body>
@@ -124,7 +124,7 @@ function createConfirmationEmailHTML(data: ContactFormData) {
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gracias por contactarnos - FerRealSpanish</title>
+    <title>Thanks for contacting us - FerRealSpanish</title>
     <style>
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; line-height: 1.6; color: #333; margin: 0; padding: 0; background-color: #f7f9fc; }
         .container { max-width: 600px; margin: 0 auto; background: white; border-radius: 10px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
@@ -139,37 +139,37 @@ function createConfirmationEmailHTML(data: ContactFormData) {
 <body>
     <div class="container">
         <div class="header">
-            <h1>¡Gracias! 🙏</h1>
+            <h1>Thank you! 🙏</h1>
             <p style="margin: 10px 0 0 0; font-size: 18px;">We received your message</p>
         </div>
         
         <div class="content">
-            <p>¡Hola <strong>${firstName}</strong>!</p>
+            <p>Hello <strong>${firstName}</strong>!</p>
             
-            <p>Gracias por contactarnos. Hemos recibido tu mensaje y nos pondremos en contacto contigo muy pronto.</p>
+            <p>Thank you for contacting us. We have received your message and will get back to you very soon.</p>
             
             <div class="highlight-box">
-                <h3 style="color: #2563eb; margin-top: 0;">📧 ¿Qué sigue?</h3>
-                <p>• Revisaremos tu mensaje cuidadosamente</p>
-                <p>• Te responderemos en las próximas 24 horas</p>
-                <p>• Si tienes dudas urgentes, puedes agendar una clase gratuita directamente</p>
+                <h3 style="color: #2563eb; margin-top: 0;">📧 What's next?</h3>
+                <p>• We'll review your message carefully</p>
+                <p>• We'll respond within the next 24 hours</p>
+                <p>• If you have urgent questions, you can schedule a free class directly</p>
             </div>
             
             <div style="text-align: center; margin: 30px 0;">
-                <p style="font-size: 16px; margin-bottom: 25px;">¿No puedes esperar? Agenda tu clase gratis ahora:</p>
+                <p style="font-size: 16px; margin-bottom: 25px;">Can't wait? Schedule your free class now:</p>
                 <a href="https://ferrealspanish.com/schedule-class" 
                    style="display: inline-block; background: linear-gradient(135deg, #ff6b6b, #ee5a52); color: white !important; padding: 18px 35px; border-radius: 12px; text-decoration: none; font-weight: bold; font-size: 16px;">
-                    📅 Agendar Clase Gratis
+                    📅 Schedule Free Class
                 </a>
             </div>
             
-            <p>¡Nos vemos pronto!<br>
+            <p>See you soon!<br>
             <strong>FerRealSpanish Team</strong> 🇪🇸</p>
         </div>
         
         <div class="footer">
             <p>&copy; ${new Date().getFullYear()} FerRealSpanish. All rights reserved.</p>
-            <p>Este es un email de confirmación automático.</p>
+            <p>This is an automated confirmation email.</p>
         </div>
     </div>
 </body>
@@ -186,8 +186,8 @@ export const POST: APIRoute = async ({ request }) => {
     const recaptchaToken = formData['g-recaptcha-response'];
     if (!recaptchaToken) {
       return new Response(JSON.stringify({ 
-        error: 'reCAPTCHA requerido',
-        message: 'Por favor completa la verificación reCAPTCHA'
+        error: 'reCAPTCHA required',
+        message: 'Please complete the reCAPTCHA verification'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -197,8 +197,8 @@ export const POST: APIRoute = async ({ request }) => {
     const isValidRecaptcha = await validateRecaptcha(recaptchaToken);
     if (!isValidRecaptcha) {
       return new Response(JSON.stringify({ 
-        error: 'Verificación reCAPTCHA fallida',
-        message: 'La verificación reCAPTCHA falló. Por favor intenta nuevamente.'
+        error: 'reCAPTCHA verification failed',
+        message: 'reCAPTCHA verification failed. Please try again.'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -210,8 +210,8 @@ export const POST: APIRoute = async ({ request }) => {
     
     if (!firstName || !lastName || !email || !message) {
       return new Response(JSON.stringify({ 
-        error: 'Todos los campos son requeridos',
-        message: 'Por favor completa todos los campos del formulario'
+        error: 'All fields are required',
+        message: 'Please complete all form fields'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -222,8 +222,8 @@ export const POST: APIRoute = async ({ request }) => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return new Response(JSON.stringify({ 
-        error: 'Email inválido',
-        message: 'Por favor ingresa un email válido'
+        error: 'Invalid email',
+        message: 'Please enter a valid email'
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -235,7 +235,7 @@ export const POST: APIRoute = async ({ request }) => {
       console.log('⚠️ Resend not configured, simulating email send');
       return new Response(JSON.stringify({ 
         success: true,
-        message: 'Mensaje enviado exitosamente (modo demo)',
+        message: 'Message sent successfully (demo mode)',
         isDemo: true
       }), {
         status: 200,
@@ -249,7 +249,7 @@ export const POST: APIRoute = async ({ request }) => {
       // Enviar email al profesor
       console.log(`📤 Enviando email al profesor: ${TEACHER_EMAIL}`);
       const teacherEmailResult = await resend.emails.send({
-        from: 'FerRealSpanish Contact <onboarding@resend.dev>',
+        from: 'FerRealSpanish Contact <noreply@ferrealspanish.com>',
         to: [TEACHER_EMAIL],
         replyTo: email,
         subject: `Nueva consulta de ${firstName} ${lastName}`,
@@ -261,9 +261,9 @@ export const POST: APIRoute = async ({ request }) => {
       // Enviar email de confirmación al usuario
       console.log(`📤 Enviando email de confirmación al usuario: ${email}`);
       const confirmationEmailResult = await resend.emails.send({
-        from: 'FerRealSpanish <onboarding@resend.dev>',
+        from: 'FerRealSpanish <noreply@ferrealspanish.com>',
         to: [email],
-        subject: 'Gracias por contactarnos - FerRealSpanish',
+        subject: 'Thanks for contacting us - FerRealSpanish',
         html: createConfirmationEmailHTML(formData),
       });
 
@@ -271,7 +271,7 @@ export const POST: APIRoute = async ({ request }) => {
 
       return new Response(JSON.stringify({ 
         success: true,
-        message: 'Mensaje enviado exitosamente. Te responderemos pronto.',
+        message: 'Message sent successfully. We will respond to you soon.',
         teacherEmailId: teacherEmailResult.data?.id,
         confirmationEmailId: confirmationEmailResult.data?.id
       }), {
@@ -283,8 +283,8 @@ export const POST: APIRoute = async ({ request }) => {
       console.error('Error sending emails:', emailError);
       
       return new Response(JSON.stringify({ 
-        error: 'Error enviando emails',
-        message: 'Hubo un problema enviando tu mensaje. Por favor intenta nuevamente.',
+        error: 'Error sending emails',
+        message: 'There was a problem sending your message. Please try again.',
         details: emailError instanceof Error ? emailError.message : 'Unknown email error'
       }), {
         status: 500,
@@ -296,8 +296,8 @@ export const POST: APIRoute = async ({ request }) => {
     console.error('Contact form error:', error);
     
     return new Response(JSON.stringify({ 
-      error: 'Error interno del servidor',
-      message: 'Hubo un problema procesando tu solicitud',
+      error: 'Internal server error',
+      message: 'There was a problem processing your request',
       details: error instanceof Error ? error.message : 'Unknown error'
     }), {
       status: 500,

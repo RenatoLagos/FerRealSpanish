@@ -177,7 +177,7 @@ function createConfirmationEmailHTML(bookingData: any) {
             <p>We can't wait to help you on your Spanish learning journey! If you have any questions, feel free to reach out.</p>
             
             <p>¡Nos vemos pronto!<br>
-            <strong>FerRealSpanish Team</strong> 🇪🇸</p>
+            <strong>FerRealSpanish Team</strong></p>
         </div>
         
         <div class="footer">
@@ -454,7 +454,7 @@ export const POST: APIRoute = async ({ request }) => {
       };
 
       await resend.emails.send({
-        from: `FerRealSpanish <${import.meta.env.FROM_EMAIL || 'onboarding@resend.dev'}>`,
+        from: `FerRealSpanish <${import.meta.env.FROM_EMAIL || 'noreply@ferrealspanish.com'}>`,
         to: [studentEmail],
         subject: `¡Class Confirmed! Your Spanish lesson is scheduled for ${new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`,
         html: createConfirmationEmailHTML(emailData),
@@ -499,7 +499,7 @@ FerRealSpanish Team
       };
 
       await resend.emails.send({
-        from: `FerRealSpanish System <${import.meta.env.FROM_EMAIL || 'onboarding@resend.dev'}>`,
+        from: `FerRealSpanish System <${import.meta.env.FROM_EMAIL || 'noreply@ferrealspanish.com'}>`,
         to: ['ferrealspanish@gmail.com'],
         subject: `🎯 Nueva Clase Agendada - ${studentName} (${new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })})`,
         html: createTeacherNotificationEmailHTML(teacherEmailData),

@@ -52,15 +52,34 @@
     }
 }
 
-/* Aumentar padding lateral en modo móvil */
-@media (max-width: 640px) {
+/* Aumentar padding lateral en modo móvil - incluye iPhone XR (414px) */
+@media (max-width: 768px) {
     .max-w-7xl {
-        padding-left: 1.5rem !important; /* 24px en lugar de 16px */
-        padding-right: 1.5rem !important; /* 24px en lugar de 16px */
+        padding-left: 2.5rem !important; /* 40px para mayor espacio respiratorio */
+        padding-right: 2.5rem !important; /* 40px para mayor espacio respiratorio */
     }
     
     /* Aplicar también a otros contenedores principales */
     .px-4 {
+        padding-left: 2.5rem !important;
+        padding-right: 2.5rem !important;
+    }
+    
+    /* Para contenedores px-6 */
+    .px-6 {
+        padding-left: 2.5rem !important;
+        padding-right: 2.5rem !important;
+    }
+}
+
+/* Para pantallas muy pequeñas */
+@media (max-width: 380px) {
+    .max-w-7xl {
+        padding-left: 1.5rem !important; /* 24px en pantallas muy pequeñas */
+        padding-right: 1.5rem !important; /* 24px en pantallas muy pequeñas */
+    }
+    
+    .px-4, .px-6 {
         padding-left: 1.5rem !important;
         padding-right: 1.5rem !important;
     }

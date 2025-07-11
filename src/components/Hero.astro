@@ -12,11 +12,11 @@ const {
 } = Astro.props;
 ---
 
-<section class="relative py-20 md:py-28 bg-[var(--background-primary)]">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-24">
-    <div class="flex flex-col md:flex-row items-center md:items-center gap-8">
+<section class="relative py-24 md:py-36 bg-[var(--background-primary)]">
+  <div class="max-w-7xl mx-auto px-8 sm:px-12 lg:px-16 md:mt-12">
+    <div class="flex flex-col md:flex-row items-center md:items-center gap-12 md:gap-16">
       <div class="text-center md:text-left md:w-3/5">
-        <h1 class="text-8xl font-satoshi font-extrabold mb-6 tracking-normal leading-tight title-with-breaks">
+        <h1 class="text-8xl font-satoshi font-extrabold mb-10 tracking-normal leading-tight title-with-breaks">
           {title}
           <div class="svg-container">
             <div class="text-[var(--button-secondary)] font-satoshi font-extrabold">For Real</div>
@@ -26,10 +26,10 @@ const {
             </svg>
           </div>
         </h1>
-        <p class="text-lg font-semibold mb-8 text-black">
+        <p class="text-lg font-semibold mb-12 text-black max-w-2xl">
           {subtitle}
         </p>
-        <div class="flex flex-col sm:flex-row gap-4 justify-center md:justify-start">
+        <div class="flex flex-col sm:flex-row gap-6 justify-center md:justify-start">
           <Button 
             href="/about" 
             variant="secondary" 
@@ -102,6 +102,19 @@ const {
     border-radius: 200px;
     object-fit: cover;
     box-shadow: 12px 12px 0px 0px #000000;
+  }
+
+  /* Responsive fix para evitar desbordamiento horizontal en móvil */
+  @media (max-width: 768px) {
+    .fer-img {
+      margin-left: 0;
+      margin-right: 0;
+      max-width: 280px;
+    }
+    
+    .title-with-breaks {
+      font-size: 3.5rem;
+    }
   }
 
   .svg-container {
