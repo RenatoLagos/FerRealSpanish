@@ -4,29 +4,110 @@ import '../styles/global.css';
 interface Props {
 	title?: string;
 	description?: string;
+	keywords?: string;
+	image?: string;
+	type?: string;
+	canonical?: string;
 }
 
 const { 
-	title = "FerRealSpanish - Learn Spanish Online",
-	description = "Learn Spanish efficiently with our personalized classes and experienced teachers."
+	title = "FerRealSpanish - Learn Spanish Online with Native Teacher",
+	description = "Learn Spanish efficiently with personalized online classes from experienced native teacher Fernanda. Individual lessons, flexible schedules, and real conversation practice.",
+	keywords = "learn spanish online, spanish classes, native spanish teacher, spanish lessons, online spanish tutor, spanish conversation, fernanda spanish teacher",
+	image = "/full_program.jpg",
+	type = "website",
+	canonical = Astro.url.href
 } = Astro.props;
+
+// Construir la URL completa de la imagen
+const imageUrl = new URL(image, Astro.site || 'https://ferrealspanish.com').href;
 ---
 
 <!doctype html>
 <html lang="en">
 	<head>
+		<!-- Google -->
+		<meta name="google-site-verification" content="yxLn7_ycWwd7BWeySgbgxJWThh-9D8xnyqTPbH_Ug7M" />
+		
 		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<meta name="generator" content={Astro.generator} />
+		
+		<!-- SEO Meta Tags -->
+		<title>{title}</title>
 		<meta name="description" content={description} />
-		<meta name="viewport" content="width=device-width" />
+		<meta name="keywords" content={keywords} />
+		<meta name="author" content="Fernanda Pacheco - FerRealSpanish" />
+		<meta name="robots" content="index, follow" />
+		<link rel="canonical" href={canonical} />
+		
+		<!-- Open Graph / Facebook -->
+		<meta property="og:type" content={type} />
+		<meta property="og:url" content={canonical} />
+		<meta property="og:title" content={title} />
+		<meta property="og:description" content={description} />
+		<meta property="og:image" content={imageUrl} />
+		<meta property="og:image:alt" content="FerRealSpanish - Learn Spanish Online" />
+		<meta property="og:site_name" content="FerRealSpanish" />
+		<meta property="og:locale" content="en_US" />
+		<meta property="og:locale:alternate" content="es_ES" />
+		
+		<!-- Twitter -->
+		<meta name="twitter:card" content="summary_large_image" />
+		<meta name="twitter:url" content={canonical} />
+		<meta name="twitter:title" content={title} />
+		<meta name="twitter:description" content={description} />
+		<meta name="twitter:image" content={imageUrl} />
+		<meta name="twitter:creator" content="@ferrealspanish" />
+		
+		<!-- Favicons -->
 		<link rel="icon" type="image/png" href="/loro.PNG">
 		<link rel="shortcut icon" href="/loro.PNG" type="image/png">
 		<link rel="apple-touch-icon" href="/loro.PNG">
+		
+		<!-- Fonts -->
 		<link href="https://api.fontshare.com/v2/css?f[]=satoshi@400,500,700,800,900&display=swap" rel="stylesheet">
 		<link rel="preconnect" href="https://fonts.googleapis.com">
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 		<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
-		<meta name="generator" content={Astro.generator} />
-		<title>{title}</title>
+		
+		<!-- Structured Data -->
+		<script type="application/ld+json">
+		{
+			"@context": "https://schema.org",
+			"@type": "EducationalOrganization",
+			"name": "FerRealSpanish",
+			"url": "https://ferrealspanish.com",
+			"logo": "https://ferrealspanish.com/loro.PNG",
+			"description": "Learn Spanish online with personalized classes from experienced native teacher Fernanda",
+			"address": {
+				"@type": "PostalAddress",
+				"addressCountry": "Online"
+			},
+			"contactPoint": {
+				"@type": "ContactPoint",
+				"contactType": "Customer Service",
+				"availableLanguage": ["English", "Spanish"]
+			},
+			"sameAs": [
+				"https://www.facebook.com/fernanda.pacheco.bergereault",
+				"https://www.instagram.com/ferrealspanish/"
+			],
+			"founder": {
+				"@type": "Person",
+				"name": "Fernanda Pacheco",
+				"jobTitle": "Spanish Teacher",
+				"url": "https://ferrealspanish.com/about"
+			},
+			"offers": {
+				"@type": "Offer",
+				"name": "Spanish Online Classes",
+				"description": "Personalized Spanish lessons with native teacher",
+				"category": "Education"
+			}
+		}
+		</script>
+		
 		<slot name="head" />
 	</head>
 	<body class="min-h-screen flex flex-col font-nunito">
@@ -43,7 +124,7 @@ const {
 						<a href="/" class="hover:text-[var(--button-primary)] text-xl font-black">Home</a>
 						<a href="/about" class="hover:text-[var(--button-primary)] text-xl font-black">About</a>
 						<a href="/schedule-class" class="hover:text-[var(--button-primary)] text-xl font-black">Schedule</a>
-						<a href="/#contact-section" class="hover:text-[var(--button-primary)] text-xl font-black contact-link">Contact</a>
+						<a href="/contact" class="hover:text-[var(--button-primary)] text-xl font-black">Contact</a>
 					</nav>
 					<button id="mobile-menu-button" class="md:hidden p-2 rounded-md hover:text-[var(--button-primary)]">
 						<svg id="hamburger-icon" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -62,7 +143,7 @@ const {
 					<a href="/" class="block px-3 py-2 text-xl font-black hover:text-[var(--button-primary)] hover:bg-gray-50 rounded-md">Home</a>
 					<a href="/about" class="block px-3 py-2 text-xl font-black hover:text-[var(--button-primary)] hover:bg-gray-50 rounded-md">About</a>
 					<a href="/schedule-class" class="block px-3 py-2 text-xl font-black hover:text-[var(--button-primary)] hover:bg-gray-50 rounded-md">Schedule</a>
-					<a href="/#contact-section" class="block px-3 py-2 text-xl font-black hover:text-[var(--button-primary)] hover:bg-gray-50 rounded-md contact-link">Contact</a>
+					<a href="/contact" class="block px-3 py-2 text-xl font-black hover:text-[var(--button-primary)] hover:bg-gray-50 rounded-md">Contact</a>
 				</div>
 			</div>
 		</header>

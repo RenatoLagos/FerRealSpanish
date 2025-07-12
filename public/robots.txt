@@ -1,0 +1,10 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://ferrealspanish.com/sitemap.xml
+
+# Bloquear archivos innecesarios
+Disallow: /api/
+Disallow: /*.json$
+Disallow: /_* 
