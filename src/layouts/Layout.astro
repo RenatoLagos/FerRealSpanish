@@ -1,6 +1,8 @@
 ---
 import '../styles/global.css';
 
+import { ClientRouter } from 'astro:transitions';
+
 interface Props {
 	title?: string;
 	description?: string;
@@ -26,6 +28,7 @@ const imageUrl = new URL(image, Astro.site || 'https://ferrealspanish.com').href
 <!doctype html>
 <html lang="en">
 	<head>
+		<ClientRouter />
 		<!-- Google -->
 		<meta name="google-site-verification" content="yxLn7_ycWwd7BWeySgbgxJWThh-9D8xnyqTPbH_Ug7M" />
 
