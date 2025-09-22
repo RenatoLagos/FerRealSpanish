@@ -188,6 +188,33 @@ const siteKey = import.meta.env.RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71U
   let selectedTimeSlot: any = null;
   let selectedDate: string | null = null;
 
+  const timeFormatter = new Intl.DateTimeFormat(undefined, {
+    hour: 'numeric',
+    minute: '2-digit'
+  });
+  const timeFormatterWithZone = new Intl.DateTimeFormat(undefined, {
+    hour: 'numeric',
+    minute: '2-digit',
+    timeZoneName: 'short'
+  });
+
+  function formatLocalTimeRange(startISO: string, endISO: string): string {
+    const startDate = new Date(startISO);
+    const endDate = new Date(endISO);
+
+    if (Number.isNaN(startDate.getTime()) || Number.isNaN(endDate.getTime())) {
+      return '';
+    }
+
+    const startLabel = timeFormatter.format(startDate);
+    const endLabel = timeFormatter.format(endDate);
+    const zonePart = timeFormatterWithZone
+      .formatToParts(startDate)
+      .find(part => part.type === 'timeZoneName')
+      ?.value.trim() ?? '';
+
+    return zonePart ? `${startLabel} - ${endLabel} ${zonePart}` : `${startLabel} - ${endLabel}`;
+  }
   document.addEventListener('DOMContentLoaded', () => {
     // Current date
     const currentDate = new Date();
@@ -471,34 +498,39 @@ const siteKey = import.meta.env.RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71U
           availableSlots.forEach((slot: any) => {
             const baseClasses = "p-3 rounded-md text-center text-sm cursor-pointer transition-colors time-btn";
             const stateClasses = "border border-gray-200 hover:bg-gray-50 text-gray-700";
-            
+            const localDisplayTime = formatLocalTimeRange(slot.startTime, slot.endTime) || slot.displayTime;
+            const encodedDisplay = encodeURIComponent(localDisplayTime);
+
             slotsHTML += `
-              <div class="${baseClasses} ${stateClasses}" data-time="${slot.startTime}-${slot.endTime}" data-start="${slot.startTime}" data-end="${slot.endTime}">
-                ${slot.displayTime}
+              <div class="${baseClasses} ${stateClasses}" data-time="${slot.startTime}-${slot.endTime}" data-start="${slot.startTime}" data-end="${slot.endTime}" data-display="${encodedDisplay}">
+                ${localDisplayTime}
               </div>
             `;
           });
           timeSlotsEl.innerHTML = slotsHTML;
           
           // Add time slot selection listeners
-          document.querySelectorAll('.time-btn').forEach(btn => {
-            btn.addEventListener('click', (e) => {
-              document.querySelectorAll('.time-btn').forEach(b => {
-                b.classList.remove('bg-[#7dd3c0]', 'text-white');
-                b.classList.add('border', 'border-gray-200', 'hover:bg-gray-50', 'text-gray-700');
+          document.querySelectorAll<HTMLElement>('.time-btn').forEach(btn => {
+            btn.addEventListener('click', (event) => {
+              document.querySelectorAll<HTMLElement>('.time-btn').forEach(button => {
+                button.classList.remove('bg-[#7dd3c0]', 'text-white');
+                button.classList.add('border', 'border-gray-200', 'hover:bg-gray-50', 'text-gray-700');
               });
-              
-              const target = e.target as HTMLElement;
-              target.classList.add('bg-[#7dd3c0]', 'text-white');
-              target.classList.remove('border', 'border-gray-200', 'hover:bg-gray-50', 'text-gray-700');
-              
+
+              const buttonEl = event.currentTarget as HTMLElement;
+              buttonEl.classList.add('bg-[#7dd3c0]', 'text-white');
+              buttonEl.classList.remove('border', 'border-gray-200', 'hover:bg-gray-50', 'text-gray-700');
+
+              const displayAttr = buttonEl.getAttribute('data-display');
+              const displayText = displayAttr ? decodeURIComponent(displayAttr) : (buttonEl.textContent || '').trim();
+
               selectedTimeSlot = {
                 date: selectedDate,
-                startTime: target.getAttribute('data-start'),
-                endTime: target.getAttribute('data-end'),
-                displayTime: target.textContent
+                startTime: buttonEl.getAttribute('data-start'),
+                endTime: buttonEl.getAttribute('data-end'),
+                displayTime: displayText
               };
-              
+
               // Update button text and show form
               if (confirmBookingEl) confirmBookingEl.textContent = 'Book This Class';
               studentForm?.classList.remove('hidden');

@@ -15,6 +15,9 @@ const CREDENTIALS = {
 };
 
 const TEACHER_CALENDAR_ID = import.meta.env.TEACHER_CALENDAR_ID || 'primary';
+const WORK_DAY_START_HOUR = 9;
+const WORK_DAY_END_HOUR = 18;
+const SLOT_DURATION_MINUTES = 30;
 
 // Verificar si Google está configurado
 const isGoogleConfigured = () => {
@@ -121,28 +124,37 @@ export const GET: APIRoute = async ({ request }) => {
 
       const busyTimes = busyResponse.data.calendars?.[TEACHER_CALENDAR_ID]?.busy || [];
 
-      // Generar slots disponibles (9 AM a 6 PM, 1 hora cada uno)
+      // Generar slots disponibles (9 AM a 6 PM, 30 minutos cada uno)
       const availableSlots = [];
-      for (let hour = 9; hour < 18; hour++) {
-        const slotStart = new Date(selectedDate);
-        slotStart.setHours(hour, 0, 0, 0);
-        
-        const slotEnd = new Date(selectedDate);
-        slotEnd.setHours(hour + 1, 0, 0, 0);
+      const workDayEnd = new Date(selectedDate);
+      workDayEnd.setHours(WORK_DAY_END_HOUR, 0, 0, 0);
 
-        // Verificar si este slot no está ocupado
-        const isAvailable = !busyTimes.some((busy: any) => {
-          const busyStart = new Date(busy.start!);
-          const busyEnd = new Date(busy.end!);
-          return (slotStart < busyEnd && slotEnd > busyStart);
-        });
+      for (let hour = WORK_DAY_START_HOUR; hour < WORK_DAY_END_HOUR; hour++) {
+        for (let minute = 0; minute < 60; minute += SLOT_DURATION_MINUTES) {
+          const slotStart = new Date(selectedDate);
+          slotStart.setHours(hour, minute, 0, 0);
 
-        if (isAvailable) {
-          availableSlots.push({
-            startTime: slotStart.toISOString(),
-            endTime: slotEnd.toISOString(),
-            displayTime: formatTimeSlot(slotStart, slotEnd)
+          const slotEnd = new Date(slotStart);
+          slotEnd.setMinutes(slotEnd.getMinutes() + SLOT_DURATION_MINUTES);
+
+          if (slotEnd > workDayEnd) {
+            continue;
+          }
+
+          // Verificar si este slot no esta ocupado
+          const isAvailable = !busyTimes.some((busy: any) => {
+            const busyStart = new Date(busy.start!);
+            const busyEnd = new Date(busy.end!);
+            return (slotStart < busyEnd && slotEnd > busyStart);
           });
+
+          if (isAvailable) {
+            availableSlots.push({
+              startTime: slotStart.toISOString(),
+              endTime: slotEnd.toISOString(),
+              displayTime: formatTimeSlot(slotStart, slotEnd)
+            });
+          }
         }
       }
 
@@ -191,20 +203,27 @@ export const GET: APIRoute = async ({ request }) => {
 
 function generateMockSlots(date: Date) {
   const slots = [];
-  const baseHours = [9, 10, 13, 14, 16]; // 9 AM, 10 AM, 1 PM, 2 PM, 4 PM
-  
-  for (const hour of baseHours) {
-    const slotStart = new Date(date);
-    slotStart.setHours(hour, 0, 0, 0);
-    
-    const slotEnd = new Date(date);
-    slotEnd.setHours(hour + 1, 0, 0, 0);
-    
-    slots.push({
-      startTime: slotStart.toISOString(),
-      endTime: slotEnd.toISOString(),
-      displayTime: formatTimeSlot(slotStart, slotEnd)
-    });
+  const workDayEnd = new Date(date);
+  workDayEnd.setHours(WORK_DAY_END_HOUR, 0, 0, 0);
+
+  for (let hour = WORK_DAY_START_HOUR; hour < WORK_DAY_END_HOUR; hour++) {
+    for (let minute = 0; minute < 60; minute += SLOT_DURATION_MINUTES) {
+      const slotStart = new Date(date);
+      slotStart.setHours(hour, minute, 0, 0);
+
+      const slotEnd = new Date(slotStart);
+      slotEnd.setMinutes(slotEnd.getMinutes() + SLOT_DURATION_MINUTES);
+
+      if (slotEnd > workDayEnd) {
+        continue;
+      }
+
+      slots.push({
+        startTime: slotStart.toISOString(),
+        endTime: slotEnd.toISOString(),
+        displayTime: formatTimeSlot(slotStart, slotEnd)
+      });
+    }
   }
   
   return slots;
