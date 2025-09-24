@@ -16,6 +16,7 @@ const CREDENTIALS = {
 };
 
 const TEACHER_CALENDAR_ID = import.meta.env.TEACHER_CALENDAR_ID || 'primary';
+const TEACHER_TIME_ZONE = import.meta.env.TEACHER_TIME_ZONE || 'America/New_York';
 
 // Clave secreta de reCAPTCHA desde variables de entorno
 const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"; // Fallback a clave de prueba
@@ -32,6 +33,7 @@ interface BookingData {
   studentPhone?: string;
   spanishLevel: string;
   courseType: string;
+  studentTimeZone?: string;
   'g-recaptcha-response'?: string;
 }
 
@@ -58,26 +60,24 @@ async function validateRecaptcha(token: string): Promise<boolean> {
 
 // Template del correo de confirmación
 function createConfirmationEmailHTML(bookingData: any) {
-  const { studentName, date, startTime, endTime, spanishLevel, courseType, meetLink, meetInstructions } = bookingData;
-  
-  const formatDate = new Date(date).toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-  
-  const formatStartTime = new Date(startTime).toLocaleTimeString('en-US', { 
-    hour: 'numeric', 
-    minute: '2-digit',
-    hour12: true 
-  });
-  
-  const formatEndTime = new Date(endTime).toLocaleTimeString('en-US', { 
-    hour: 'numeric', 
-    minute: '2-digit',
-    hour12: true 
-  });
+  const {
+    studentName,
+    date,
+    startTime,
+    endTime,
+    spanishLevel,
+    courseType,
+    meetLink,
+    meetInstructions,
+    studentTimeZone
+  } = bookingData;
+
+  const timeZone = studentTimeZone || TEACHER_TIME_ZONE;
+  const classStart = new Date(startTime);
+  const classEnd = new Date(endTime);
+  const formatDate = formatDateForZone(classStart, timeZone);
+  const formatStartTime = formatTimeInZone(classStart, timeZone, true);
+  const formatEndTime = formatTimeInZone(classEnd, timeZone, true);
 
   return `
 <!DOCTYPE html>
@@ -169,8 +169,8 @@ function createConfirmationEmailHTML(bookingData: any) {
             <div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; margin: 20px 0; border-radius: 5px;">
                 <h4 style="color: #92400e; margin-top: 0;">📋 Important Notes</h4>
                 <p style="margin-bottom: 0; color: #92400e;">
-                    • If you need to reschedule, please contact us at least 24 hours in advance<br>
-                    • Keep this email for your records and easy access to the meeting link
+                    - If you need to reschedule, please contact us at least 24 hours in advance<br>
+                    - Keep this email for your records and easy access to the meeting link
                 </p>
             </div>
             
@@ -193,25 +193,12 @@ function createConfirmationEmailHTML(bookingData: any) {
 // Template del correo de notificación al profesor
 function createTeacherNotificationEmailHTML(bookingData: any) {
   const { studentName, studentEmail, studentPhone, date, startTime, endTime, spanishLevel, courseType, meetLink } = bookingData;
-  
-  const formatDate = new Date(date).toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-  
-  const formatStartTime = new Date(startTime).toLocaleTimeString('en-US', { 
-    hour: 'numeric', 
-    minute: '2-digit',
-    hour12: true 
-  });
-  
-  const formatEndTime = new Date(endTime).toLocaleTimeString('en-US', { 
-    hour: 'numeric', 
-    minute: '2-digit',
-    hour12: true 
-  });
+
+  const classStart = new Date(startTime);
+  const classEnd = new Date(endTime);
+  const formatDate = formatDateForZone(classStart, TEACHER_TIME_ZONE);
+  const formatStartTime = formatTimeInZone(classStart, TEACHER_TIME_ZONE, true);
+  const formatEndTime = formatTimeInZone(classEnd, TEACHER_TIME_ZONE, true);
 
   return `
 <!DOCTYPE html>
@@ -297,20 +284,14 @@ function createTeacherNotificationEmailHTML(bookingData: any) {
 
 // Template de recordatorio 24h antes de la clase
 function create24HourReminderEmailHTML(bookingData: any) {
-  const { studentName, date, startTime, endTime, meetLink } = bookingData;
-  
-  const formatDate = new Date(date).toLocaleDateString('en-US', { 
-    weekday: 'long', 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
-  
-  const formatStartTime = new Date(startTime).toLocaleTimeString('en-US', { 
-    hour: 'numeric', 
-    minute: '2-digit',
-    hour12: true 
-  });
+  const { studentName, date, startTime, endTime, meetLink, studentTimeZone } = bookingData;
+
+  const timeZone = studentTimeZone || TEACHER_TIME_ZONE;
+  const classStart = new Date(startTime);
+  const classEnd = new Date(endTime);
+  const formatDate = formatDateForZone(classStart, timeZone);
+  const formatStartTime = formatTimeInZone(classStart, timeZone, true);
+  const formatEndTime = formatTimeInZone(classEnd, timeZone, true);
 
   return `
 <!DOCTYPE html>
@@ -345,7 +326,7 @@ function create24HourReminderEmailHTML(bookingData: any) {
             <div class="highlight-box">
                 <h3 style="color: #c2410c; margin-top: 0;">📅 Class Tomorrow</h3>
                 <p><strong>Date:</strong> ${formatDate}</p>
-                <p><strong>Time:</strong> ${formatStartTime}</p>
+                <p><strong>Time:</strong> ${formatStartTime} - ${formatEndTime}</p>
             </div>
             
             <div style="text-align: center; margin: 30px 0;">
@@ -431,108 +412,136 @@ function create1HourReminderEmailHTML(bookingData: any) {
 
 // Función para programar recordatorios con lógica específica de tiempo
 async function scheduleReminders(bookingData: any) {
-  const { startTime, studentEmail, studentName, date, meetLink } = bookingData;
-  
+  const { startTime, studentEmail, studentName, date, meetLink, studentTimeZone } = bookingData;
+  const reminderTimeZone = resolveTimeZone(studentTimeZone);
+
   try {
-    // Calcular fechas de recordatorios
     const classDate = new Date(startTime);
     const now = new Date();
-    const hoursUntilClass = (classDate.getTime() - now.getTime()) / (1000 * 60 * 60);
-    
-    console.log(`📅 Sistema de recordatorios configurado para ${studentName}:`);
-    console.log(`   - Clase programada: ${classDate.toISOString()}`);
-    console.log(`   - Horas hasta la clase: ${hoursUntilClass.toFixed(1)}`);
-    
-    // LÓGICA DE RECORDATORIOS SEGÚN ESPECIFICACIÓN:
-    
-    if (hoursUntilClass < 24) {
-      // CASO 1: Menos de 24 horas - SOLO 1 recordatorio 1 hora antes
-      console.log('📋 REGLA: Menos de 24h -> Solo recordatorio 1h antes');
-      
-      if (hoursUntilClass <= 1) {
-        console.log('🚨 Enviando recordatorio urgente (clase en 1h o menos)');
-        await sendImmediateReminder({
-          studentName,
-          studentEmail,
-          date,
-          startTime,
-          meetLink,
-          reminderType: '1h'
-        });
-      } else {
-        console.log('⏱️  Recordatorio 1h programado (no se envía recordatorio de 24h)');
-        // TODO: En producción, programar recordatorio para 1h antes
-      }
-      
-    } else if (hoursUntilClass >= 48) {
-      // CASO 2: 48 horas o más - 2 recordatorios (24h + 1h antes)
-      console.log('📋 REGLA: 48h o más -> Recordatorio 24h antes + 1h antes');
-      
-      // Verificar si estamos en el momento del recordatorio de 24h
-      const hoursUntil24hReminder = hoursUntilClass - 24;
-      
-      if (Math.abs(hoursUntil24hReminder) <= 1) { // Si estamos cerca del momento de 24h antes
-        console.log('📅 Enviando recordatorio de 24h (clase programada para mañana)');
-        await sendImmediateReminder({
-          studentName,
-          studentEmail,
-          date,
-          startTime,
-          meetLink,
-          reminderType: '24h'
-        });
-      } else {
-        console.log('⏰ Recordatorios programados: 24h antes + 1h antes');
-        // TODO: En producción, programar ambos recordatorios
-      }
-      
-    } else {
-      // CASO 3: Entre 24-48 horas - Solo recordatorio 1h antes
-      console.log('📋 REGLA: Entre 24-48h -> Solo recordatorio 1h antes');
-      console.log('⏱️  Recordatorio 1h programado (no se envía recordatorio de 24h)');
-      // TODO: En producción, programar solo recordatorio de 1h antes
+
+    if (Number.isNaN(classDate.getTime())) {
+      console.warn('[Reminder] Unable to schedule reminders: invalid class start', { startTime });
+      return false;
     }
-    
-    // Registro del sistema de recordatorios configurado
-    console.log('✅ Sistema de recordatorios configurado exitosamente');
-    
+
+    const msUntilClass = classDate.getTime() - now.getTime();
+    if (msUntilClass <= 0) {
+      console.warn('[Reminder] Class already started/passed. Skipping reminders.');
+      return false;
+    }
+
+    const oneHourBefore = new Date(classDate.getTime() - 60 * 60 * 1000);
+    const twentyFourHoursBefore = new Date(classDate.getTime() - 24 * 60 * 60 * 1000);
+    const shouldSendDayBefore = msUntilClass >= 24 * 60 * 60 * 1000;
+
+    console.log(`[Reminder] Configuring reminders for ${studentName}`);
+    console.log(`  - Class at: ${classDate.toISOString()}`);
+    console.log(`  - Hours until class: ${(msUntilClass / (1000 * 60 * 60)).toFixed(1)}`);
+
+    const reminderPlan: Array<{ type: '24h' | '1h'; sendAt: Date }> = [];
+
+    if (shouldSendDayBefore) {
+      reminderPlan.push({ type: '24h', sendAt: twentyFourHoursBefore });
+    }
+
+    reminderPlan.push({ type: '1h', sendAt: oneHourBefore });
+
+    for (const { type, sendAt } of reminderPlan) {
+      if (sendAt.getTime() <= now.getTime()) {
+        console.log(`[Reminder] ${type} reminder scheduled time already passed. Sending now.`);
+        await sendReminderEmail({
+          studentName,
+          studentEmail,
+          date,
+          startTime,
+          meetLink,
+          reminderType: type,
+          studentTimeZone: reminderTimeZone
+        });
+        continue;
+      }
+
+      const msUntilReminder = sendAt.getTime() - now.getTime();
+
+      if (msUntilReminder < 2 * 60 * 1000) {
+        console.log(`[Reminder] ${type} reminder is less than 2 minutes away. Sending immediately.`);
+        await sendReminderEmail({
+          studentName,
+          studentEmail,
+          date,
+          startTime,
+          meetLink,
+          reminderType: type,
+          studentTimeZone: reminderTimeZone
+        });
+        continue;
+      }
+
+      console.log(`[Reminder] ${type} reminder scheduled for ${sendAt.toISOString()}`);
+      await sendReminderEmail({
+        studentName,
+        studentEmail,
+        date,
+        startTime,
+        meetLink,
+        reminderType: type,
+        studentTimeZone: reminderTimeZone
+      }, { sendAt });
+    }
+
+    console.log('[Reminder] Reminder configuration complete.');
     return true;
   } catch (error) {
-    console.error('❌ Error en sistema de recordatorios:', error);
+    console.error('[Reminder] Error configuring reminders:', error);
     return false;
   }
 }
 
-// Función para enviar recordatorios inmediatos
-async function sendImmediateReminder(reminderData: any) {
+// Función para enviar o programar recordatorios
+async function sendReminderEmail(reminderData: any, options: { sendAt?: Date } = {}) {
   try {
     const { studentName, studentEmail, reminderType } = reminderData;
-    
+    const reminderTimeZone = resolveTimeZone(reminderData.studentTimeZone);
+    const reminderPayload = { ...reminderData, studentTimeZone: reminderTimeZone };
+
     let emailSubject: string;
     let emailHTML: string;
-    
+
     if (reminderType === '24h') {
-      emailSubject = `🔔 Recordatorio: Clase mañana | FerRealSpanish`;
-      emailHTML = create24HourReminderEmailHTML(reminderData);
+      emailSubject = `Recordatorio: Clase mañana | FerRealSpanish`;
+      emailHTML = create24HourReminderEmailHTML(reminderPayload);
     } else {
-      emailSubject = `⏰ Tu clase empieza en 1 hora | FerRealSpanish`;
-      emailHTML = create1HourReminderEmailHTML(reminderData);
+      emailSubject = `Tu clase empieza en 1 hora | FerRealSpanish`;
+      emailHTML = create1HourReminderEmailHTML(reminderPayload);
     }
-    
-    await resend.emails.send({
+
+    const sendConfig: Record<string, any> = {
       from: `FerRealSpanish Recordatorios <${import.meta.env.FROM_EMAIL || 'noreply@ferrealspanish.com'}>`,
       to: [studentEmail],
       subject: emailSubject,
       html: emailHTML
-    });
-    
-    console.log(`✅ Recordatorio ${reminderType} enviado a: ${studentEmail}`);
+    };
+
+    if (options.sendAt) {
+      sendConfig.scheduled_at = options.sendAt.toISOString();
+      console.log(`[Reminder] ${reminderType} reminder scheduled for ${options.sendAt.toISOString()}`);
+    } else {
+      console.log(`[Reminder] ${reminderType} reminder sent immediately to ${studentEmail}`);
+    }
+
+    await resend.emails.send(sendConfig);
     return true;
   } catch (error) {
-    console.error(`❌ Error enviando recordatorio ${reminderData.reminderType}:`, error);
+    console.error(`[Reminder] Error handling ${reminderData.reminderType} reminder:`, error);
     return false;
   }
 }
+
+
+
+
+
+
 
 export const POST: APIRoute = async ({ request }) => {
   try {
@@ -564,6 +573,7 @@ export const POST: APIRoute = async ({ request }) => {
     
     // Validar datos requeridos
     const { date, startTime, endTime, studentName, studentEmail, spanishLevel, courseType } = bookingData;
+    const studentTimeZone = resolveTimeZone(bookingData.studentTimeZone);
     
     if (!date || !startTime || !endTime || !studentName || !studentEmail || !spanishLevel || !courseType) {
       return new Response(JSON.stringify({ 
@@ -615,24 +625,24 @@ export const POST: APIRoute = async ({ request }) => {
 📱 PHONE: ${bookingData.studentPhone || 'Not provided'}
 
 👤 Student Information:
-• Name: ${studentName}
-• Email: ${studentEmail}
-• Phone: ${bookingData.studentPhone || 'Not provided'}
-• Spanish Level: ${spanishLevel}
+- Name: ${studentName}
+- Email: ${studentEmail}
+- Phone: ${bookingData.studentPhone || 'Not provided'}
+- Spanish Level: ${spanishLevel}
 
 📅 Class Details:
-• Date: ${date}
-• Time: ${formatTime(new Date(startTime))} - ${formatTime(new Date(endTime))}
+- Date: ${date}
+- Time: ${plainStartTime} - ${plainEndTime}
 
 🎯 This class was booked through FerRealSpanish website.
 
 📧 IMPORTANT: Confirmation email with Google Meet link sent to student automatically.
 
 ⏰ INTELLIGENT REMINDER SYSTEM:
-• < 24 hours: Only 1 reminder (1h before class)
-• ≥ 48 hours: 2 reminders (24h before + 1h before)
-• 24-48 hours: Only 1 reminder (1h before class)
-• Teacher gets Google Calendar reminders (1h, 15min before)
+- < 24 hours: Only 1 reminder (1h before class)
+- ≥ 48 hours: 2 reminders (24h before + 1h before)
+- 24-48 hours: Only 1 reminder (1h before class)
+- Teacher gets Google Calendar reminders (1h, 15min before)
 
 🎥 GOOGLE MEET INSTRUCTIONS: ${meetInstructions}
       `.trim(),
@@ -694,13 +704,23 @@ export const POST: APIRoute = async ({ request }) => {
         spanishLevel,
         courseType,
         meetLink,
-        meetInstructions
+        meetInstructions,
+        studentTimeZone
       };
+
+      const subjectDateLabel = new Intl.DateTimeFormat('en-US', {
+        month: 'long',
+        day: 'numeric',
+        timeZone: studentTimeZone
+      }).format(new Date(startTime));
+      const plainDateLabel = formatDateForZone(new Date(startTime), studentTimeZone);
+      const plainStartTime = formatTimeInZone(new Date(startTime), studentTimeZone, true);
+      const plainEndTime = formatTimeInZone(new Date(endTime), studentTimeZone, true);
 
       await resend.emails.send({
         from: `FerRealSpanish <${import.meta.env.FROM_EMAIL || 'noreply@ferrealspanish.com'}>`,
         to: [studentEmail],
-        subject: `¡Class Confirmed! Your Spanish lesson is scheduled for ${new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })}`,
+        subject: `¡Class Confirmed! Your Spanish lesson is scheduled for ${subjectDateLabel}`,
         html: createConfirmationEmailHTML(emailData),
         // Versión texto plano como fallback
         text: `
@@ -708,8 +728,8 @@ Hello ${studentName}!
 
 Your Spanish class has been confirmed:
 
-Date: ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-Time: ${formatTime(new Date(startTime))} - ${formatTime(new Date(endTime))}
+Date: ${plainDateLabel}
+Time: ${plainStartTime} - ${plainEndTime}
 Level: ${spanishLevel}
 
 Google Meet Instructions: ${meetInstructions}
@@ -730,7 +750,8 @@ FerRealSpanish Team
         studentEmail,
         studentName,
         date,
-        meetLink
+        meetLink,
+        studentTimeZone
       });
       
     } catch (emailError) {
@@ -752,10 +773,19 @@ FerRealSpanish Team
         meetLink
       };
 
+      const teacherSubjectDate = new Intl.DateTimeFormat('en-US', {
+        month: 'long',
+        day: 'numeric',
+        timeZone: TEACHER_TIME_ZONE
+      }).format(new Date(startTime));
+      const teacherPlainDate = formatDateForZone(new Date(startTime), TEACHER_TIME_ZONE);
+      const teacherPlainStart = formatTimeInZone(new Date(startTime), TEACHER_TIME_ZONE, true);
+      const teacherPlainEnd = formatTimeInZone(new Date(endTime), TEACHER_TIME_ZONE, true);
+
       await resend.emails.send({
         from: `FerRealSpanish System <${import.meta.env.FROM_EMAIL || 'noreply@ferrealspanish.com'}>`,
         to: ['ferrealspanish@gmail.com'],
-        subject: `🎯 Nueva Clase Agendada - ${studentName} (${new Date(date).toLocaleDateString('en-US', { month: 'long', day: 'numeric' })})`,
+        subject: `🎯 Nueva Clase Agendada - ${studentName} (${teacherSubjectDate})`,
         html: createTeacherNotificationEmailHTML(teacherEmailData),
         text: `
 Nueva clase agendada!
@@ -764,8 +794,8 @@ Estudiante: ${studentName}
 Email: ${studentEmail}
 Teléfono: ${bookingData.studentPhone || 'No proporcionado'}
 
-Fecha: ${new Date(date).toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
-Hora: ${formatTime(new Date(startTime))} - ${formatTime(new Date(endTime))}
+Fecha: ${teacherPlainDate}
+Hora: ${teacherPlainStart} - ${teacherPlainEnd}
 Nivel: ${spanishLevel}
 
 El estudiante ha recibido un email de confirmación con los detalles de la clase.
@@ -862,10 +892,44 @@ FerRealSpanish System
   }
 };
 
-function formatTime(date: Date): string {
-  return date.toLocaleTimeString('en-US', { 
-    hour: 'numeric', 
-    minute: '2-digit',
-    hour12: true 
+function resolveTimeZone(candidate?: string): string {
+  if (!candidate || typeof candidate !== 'string') {
+    return TEACHER_TIME_ZONE;
+  }
+
+  try {
+    new Intl.DateTimeFormat('en-US', { timeZone: candidate }).format(new Date());
+    return candidate;
+  } catch {
+    return TEACHER_TIME_ZONE;
+  }
+}
+
+function formatDateForZone(date: Date, timeZone: string): string {
+  return date.toLocaleDateString('en-US', {
+    weekday: 'long',
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+    timeZone
   });
-} 
+}
+
+function formatTimeInZone(date: Date, timeZone: string, includeZone = false): string {
+  const options: Intl.DateTimeFormatOptions = {
+    hour: 'numeric',
+    minute: '2-digit',
+    hour12: true,
+    timeZone
+  };
+
+  if (includeZone) {
+    options.timeZoneName = 'short';
+  }
+
+  return date.toLocaleTimeString('en-US', options);
+}
+
+function formatTime(date: Date, timeZone: string = TEACHER_TIME_ZONE): string {
+  return formatTimeInZone(date, timeZone);
+}

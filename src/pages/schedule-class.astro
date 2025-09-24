@@ -582,6 +582,9 @@ const siteKey = import.meta.env.RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71U
         const recaptchaResponse = (window as any).grecaptcha?.getResponse();
         
         // Send booking request to our backend API
+        const timezoneInfo = Intl.DateTimeFormat().resolvedOptions();
+        const studentTimeZone = timezoneInfo?.timeZone || 'UTC';
+
         const response = await fetch('/api/book-class', {
           method: 'POST',
           headers: {
@@ -596,6 +599,7 @@ const siteKey = import.meta.env.RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71U
             studentPhone,
             spanishLevel,
             courseType,
+            studentTimeZone,
             'g-recaptcha-response': recaptchaResponse
           })
         });
