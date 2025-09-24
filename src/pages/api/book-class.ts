@@ -632,7 +632,7 @@ export const POST: APIRoute = async ({ request }) => {
 
 📅 Class Details:
 - Date: ${date}
-- Time: ${plainStartTime} - ${plainEndTime}
+- Time: ${formatTime(new Date(startTime))} - ${formatTime(new Date(endTime))}
 
 🎯 This class was booked through FerRealSpanish website.
 
