@@ -523,7 +523,7 @@ async function sendReminderEmail(reminderData: any, options: { sendAt?: Date } =
     };
 
     if (options.sendAt) {
-      sendConfig.scheduled_at = options.sendAt.toISOString();
+      sendConfig.scheduledAt = options.sendAt.toISOString();
       console.log(`[Reminder] ${reminderType} reminder scheduled for ${options.sendAt.toISOString()}`);
     } else {
       console.log(`[Reminder] ${reminderType} reminder sent immediately to ${studentEmail}`);
