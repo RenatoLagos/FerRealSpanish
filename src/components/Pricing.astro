@@ -160,9 +160,9 @@ const pricingPlans: PricingPlan[] = [
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8" id="pricing-cards">
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center" id="pricing-cards">
       {pricingPlans.map((plan) => (
-        <div class={`bg-white rounded-2xl p-6 border-4 border-gray-200 transition-all duration-200 hover:-translate-y-1 relative flex flex-col ${plan.popular ? 'shadow-[6px_6px_0px_0px_#000000] border-4 border-[var(--button-primary)]' : 'shadow-[6px_6px_0px_0px_#000000]'}`}>
+        <div class={`bg-white rounded-2xl p-6 border-4 border-gray-200 transition-all duration-200 hover:-translate-y-1 relative flex flex-col w-full max-w-sm ${plan.popular ? 'shadow-[6px_6px_0px_0px_#000000] border-4 border-[var(--button-primary)]' : 'shadow-[6px_6px_0px_0px_#000000]'}`}>
           
           {plan.popular && (
             <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
@@ -345,4 +345,4 @@ const pricingPlans: PricingPlan[] = [
   });
 </script>
 
- 
+
