@@ -1,9 +1,65 @@
-<section class="py-24 bg-[var(--background-primary)]">
-    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-32 mt-32">
+<section class="pt-24 pb-4 bg-[var(--background-primary)]">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 mb-0 mt-32">
         <blockquote class="text-center">
             <p class="text-text-primary text-3xl md:text-4xl lg:text-5xl font-satoshi font-bold leading-relaxed mb-1 mt-4">
                 "My method, among other techniques, uses deep immersion to boost linguistic skills and cultural fluency for real-world application."
             </p>
+            <div class="mt-12 max-w-5xl mx-auto">
+                <div class="relative h-24 md:h-32 overflow-hidden">
+                    <p id="rotating-feature" class="absolute inset-0 text-3xl md:text-4xl lg:text-5xl font-satoshi font-extrabold text-[var(--accent-dark)] leading-relaxed transition-all duration-700 ease-in-out opacity-0">
+                    </p>
+                </div>
+            </div>
         </blockquote>
     </div>
 </section>
+
+<style>
+    .feature-fade-in {
+        opacity: 1 !important;
+        transform: translateY(0) !important;
+    }
+
+    .feature-fade-out {
+        opacity: 0 !important;
+        transform: translateY(-10px) !important;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const features = [
+            "Structured classes with teacher guidance",
+            "Dynamic activities",
+            "Conversation focus",
+            "Full Spanish immersion"
+        ];
+
+        const featureElement = document.getElementById('rotating-feature');
+        let currentIndex = 0;
+
+        function showFeature(index) {
+            if (!featureElement) return;
+
+            // Fade out
+            featureElement.classList.remove('feature-fade-in');
+            featureElement.classList.add('feature-fade-out');
+
+            // Wait for fade out, then change text and fade in
+            setTimeout(() => {
+                featureElement.textContent = features[index];
+                featureElement.classList.remove('feature-fade-out');
+                featureElement.classList.add('feature-fade-in');
+            }, 700);
+        }
+
+        function rotateFeatures() {
+            showFeature(currentIndex);
+            currentIndex = (currentIndex + 1) % features.length;
+        }
+
+        // Start the rotation
+        rotateFeatures();
+        setInterval(rotateFeatures, 3000); // Change every 3 seconds
+    });
+</script>

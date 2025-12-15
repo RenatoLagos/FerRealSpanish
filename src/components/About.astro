@@ -17,13 +17,18 @@ import Button from './ui/button.astro';
       </div>
     </h1>
 
-    <!-- Main Photo -->
-    <div class="mb-8">
-      <img 
-        src="/IMG_3363.JPEG" 
-        alt="Fernanda, Spanish teacher" 
-        class="w-60 h-60 md:w-72 md:h-72 rounded-full object-cover mx-auto"
-      />
+    <!-- YouTube Video -->
+    <div class="mt-16 mb-16 px-8 max-w-3xl mx-auto">
+      <div class="relative w-full" style="padding-bottom: 56.25%;">
+        <iframe
+          class="absolute top-0 left-0 w-full h-full rounded-2xl shadow-2xl"
+          src="https://www.youtube.com/embed/BmHjS5nkH1U"
+          title="Fernanda - Spanish Teacher Introduction"
+          frameborder="0"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
+          allowfullscreen
+        ></iframe>
+      </div>
     </div>
 
     <!-- Simple Bio -->
@@ -31,13 +36,9 @@ import Button from './ui/button.astro';
       <h2 class="text-2xl md:text-3xl font-satoshi font-bold text-white">
         ¡Hola! I'm Fernanda
       </h2>
-      
+
       <p class="text-lg font-bold text-white leading-relaxed max-w-2xl mx-auto">
         I'm a Spanish teacher from Chile with 5+ years of experience. Having learned English and French myself, I understand the challenges of language learning.
-      </p>
-      
-      <p class="text-lg font-extrabold text-white bg-[var(--button-primary)] px-4 py-2 rounded-lg inline-block">
-        My approach: 100% immersive Spanish from day one.
       </p>
     </div>
 
