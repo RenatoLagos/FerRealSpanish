@@ -24,3 +24,4 @@ pnpm-debug.log*
 .idea/
 
 .vercel
+DJANGO_BACKEND_GUIDE.md

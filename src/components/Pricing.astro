@@ -69,6 +69,62 @@ const pricingPlans: PricingPlan[] = [
   }
 ];
 
+const groupPricingPlans: PricingPlan[] = [
+  {
+    name: "Single Class",
+    price: 11,
+    currency: "USD",
+    classes: 1,
+    pricePerClass: 11,
+    features: [
+      "1 group class",
+      "50 minutes per class",
+      "Minimum 2 people",
+      "Custom materials",
+      "WhatsApp support",
+      "Flexible scheduling"
+    ],
+    buttonText: "Get Started",
+    buttonVariant: "secondary"
+  },
+  {
+    name: "5 Classes Pack",
+    price: 49,
+    currency: "USD",
+    classes: 5,
+    pricePerClass: 9.80,
+    popular: true,
+    features: [
+      "5 group classes",
+      "50 minutes per class",
+      "Minimum 2 people",
+      "Save $6 vs single classes",
+      "WhatsApp support",
+      "Flexible scheduling"
+    ],
+    buttonText: "Most Popular",
+    buttonVariant: "primary"
+  },
+  {
+    name: "10 Classes Pack",
+    price: 89,
+    currency: "USD",
+    classes: 10,
+    pricePerClass: 8.90,
+    features: [
+      "10 group classes",
+      "50 minutes per class",
+      "Minimum 2 people",
+      "Save $21 vs single classes",
+      "Priority scheduling",
+      "WhatsApp support",
+      "Custom learning plan"
+    ],
+    buttonText: "Best Value",
+    buttonVariant: "secondary"
+  }
+];
+
 ---
 
 <section class="py-16 bg-[var(--background-primary)]">
@@ -96,27 +152,49 @@ const pricingPlans: PricingPlan[] = [
         </svg>
         <h2 class="text-6xl font-satoshi font-extrabold mb-6">Choose Your Plan</h2>
       </div>
-      <p class="text-lg font-satoshi font-semibold max-w-2xl mx-auto mb-2">
-        You choose your days, schedules, and frequency. All plans include personalized attention and native speaker expertise.
-      </p>
-      <div class="max-w-3xl mx-auto mt-6 mb-4">
-        <div class="bg-gradient-to-r from-[var(--accent)] to-[var(--accent-dark)] rounded-xl p-6 text-white">
-          <h3 class="text-xl font-satoshi font-bold mb-3">Recommended Frequency:</h3>
-          <div class="grid md:grid-cols-2 gap-4 text-left">
-            <div class="bg-white/10 rounded-lg p-4">
-              <p class="font-bold mb-1">📈 Consistent Progress</p>
-              <p class="text-sm">2-3 times per week</p>
-            </div>
-            <div class="bg-white/10 rounded-lg p-4">
-              <p class="font-bold mb-1">🚀 Powerful Progress</p>
-              <p class="text-sm">4-6 times per week (Intensive)</p>
-            </div>
-          </div>
+    </div>
+
+    <div class="flex justify-center gap-3 mb-6">
+      <div class="normal-button-container relative" id="normal-container">
+        <Button
+            variant="secondary"
+            size="lg"
+            rounded={true}
+            class="normal-button transition-all duration-300 hover:scale-105"
+        >
+            Individual
+        </Button>
+        <div class="normal-description absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-lg border-2 border-gray-200 shadow-md opacity-0 scale-95 transition-all duration-300 whitespace-nowrap">
+          <span class="text-sm font-semibold text-gray-700">One-on-one classes</span>
+        </div>
+      </div>
+      <div class="intensive-button-container relative" id="intensive-container">
+        <Button
+            variant="primary"
+            size="lg"
+            rounded={true}
+            shadow={true}
+            class="intensive-button transition-all duration-300 hover:scale-105"
+        >
+            Grupal
+        </Button>
+        <div class="intensive-description absolute top-full mt-2 left-1/2 transform -translate-x-1/2 bg-white px-4 py-2 rounded-lg border-2 border-gray-200 shadow-md opacity-0 scale-95 transition-all duration-300 whitespace-nowrap">
+          <span class="text-sm font-semibold text-gray-700">Group classes</span>
         </div>
       </div>
     </div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center" id="pricing-cards">
+    <div class="text-center mb-12">
+      <p class="text-lg font-satoshi font-semibold max-w-2xl mx-auto transition-all duration-500" id="individual-subtitle">
+        You choose your days, schedules, and frequency. All plans include personalized attention and native speaker expertise.
+      </p>
+      <p class="text-lg font-satoshi font-semibold max-w-2xl mx-auto transition-all duration-500 hidden" id="group-subtitle">
+        Learn Spanish together with friends or family (minimum 2 people). Prices shown are per student with personalized attention and native speaker expertise.
+      </p>
+    </div>
+
+    <!-- Individual Pricing Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center transition-all duration-500" id="individual-pricing-cards">
       {pricingPlans.map((plan) => (
         <div class={`bg-white rounded-2xl p-6 border-4 border-gray-200 transition-all duration-200 hover:-translate-y-1 relative flex flex-col w-full max-w-sm ${plan.popular ? 'shadow-[6px_6px_0px_0px_#000000] border-4 border-[var(--button-primary)]' : 'shadow-[6px_6px_0px_0px_#000000]'}`}>
           
@@ -172,8 +250,233 @@ const pricingPlans: PricingPlan[] = [
         </div>
       ))}
     </div>
+
+    <!-- Group Pricing Cards (initially hidden) -->
+    <div class="hidden grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 justify-items-center transition-all duration-500" id="group-pricing-cards">
+      {groupPricingPlans.map((plan) => (
+        <div class={`bg-white rounded-2xl p-6 border-4 border-gray-200 transition-all duration-200 hover:-translate-y-1 relative flex flex-col w-full max-w-sm ${plan.popular ? 'shadow-[6px_6px_0px_0px_#000000] border-4 border-[var(--button-primary)]' : 'shadow-[6px_6px_0px_0px_#000000]'}`}>
+
+          {plan.popular && (
+            <div class="absolute -top-3 left-1/2 transform -translate-x-1/2">
+              <Button variant="primary" size="xs" class="pointer-events-none sm:px-4 sm:py-1.5 sm:text-sm">
+                Most Popular
+              </Button>
+            </div>
+          )}
+
+          <div class="text-center mb-4">
+            <h3 class="text-xl font-satoshi font-bold mb-2">{plan.name}</h3>
+            <div class="mb-2">
+              <span class="inline-block bg-[var(--button-primary)] text-white text-xs font-bold px-3 py-1 rounded-full mb-2">
+                PER STUDENT
+              </span>
+            </div>
+
+            <div class="mb-2">
+              <div class="text-3xl font-satoshi font-extrabold text-gray-900">
+                ${plan.price} <span class="text-lg font-normal">{plan.currency}</span>
+              </div>
+            </div>
+
+            <div class="text-sm text-gray-600 mb-1">
+              ${plan.pricePerClass.toFixed(2)}/class per student
+            </div>
+
+            <div class="text-sm font-semibold text-[var(--button-primary)]">
+              {plan.classes} {plan.classes === 1 ? 'class' : 'classes'}
+            </div>
+          </div>
+
+          <ul class="space-y-2 mb-4 text-sm flex-grow">
+            {plan.features.map((feature) => (
+              <li class="flex items-start">
+                <svg class="w-4 h-4 text-[var(--button-primary)] mt-0.5 mr-2 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                  <path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd"/>
+                </svg>
+                <span class="text-gray-700">{feature}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div class="mt-auto">
+            <Button
+              variant={plan.buttonVariant}
+              size="md"
+              fullWidth={true}
+              rounded={true}
+              shadow={plan.popular}
+              href="/schedule-class"
+            >
+              {plan.buttonText}
+            </Button>
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <div class="max-w-3xl mx-auto mt-12">
+      <div class="bg-gradient-to-r from-[var(--accent)] to-[var(--accent-dark)] rounded-xl p-6 text-white">
+        <h3 class="text-xl font-satoshi font-bold mb-3">Recommended Frequency:</h3>
+        <div class="grid md:grid-cols-2 gap-4 text-left">
+          <div class="bg-white/10 rounded-lg p-4">
+            <p class="font-bold mb-1">📈 Consistent Progress</p>
+            <p class="text-sm">2-3 times per week</p>
+          </div>
+          <div class="bg-white/10 rounded-lg p-4">
+            <p class="font-bold mb-1">🚀 Powerful Progress</p>
+            <p class="text-sm">4-6 times per week (Intensive)</p>
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
 </section>
 
+<style>
+  .normal-button-container:hover .normal-button {
+    transform: scale(1.1);
+  }
 
+  .normal-button-container:hover .normal-description {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
 
+  .intensive-button-container:hover .intensive-button {
+    transform: scale(1.1);
+  }
+
+  .intensive-button-container:hover .intensive-description {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  .normal-description,
+  .intensive-description {
+    z-index: 10;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  }
+
+  .normal-description::before,
+  .intensive-description::before {
+    content: '';
+    position: absolute;
+    top: -6px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 6px solid transparent;
+    border-right: 6px solid transparent;
+    border-bottom: 6px solid #e5e7eb;
+  }
+
+  .normal-description::after,
+  .intensive-description::after {
+    content: '';
+    position: absolute;
+    top: -4px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-bottom: 5px solid white;
+  }
+</style>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const intensiveContainer = document.getElementById('intensive-container');
+    const normalContainer = document.getElementById('normal-container');
+    const individualPricingCards = document.getElementById('individual-pricing-cards');
+    const groupPricingCards = document.getElementById('group-pricing-cards');
+    const individualSubtitle = document.getElementById('individual-subtitle');
+    const groupSubtitle = document.getElementById('group-subtitle');
+
+    // Handle group button click
+    if (intensiveContainer) {
+      const intensiveButton = intensiveContainer.querySelector('.intensive-button');
+      if (intensiveButton) {
+        intensiveButton.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          // Switch subtitles
+          if (individualSubtitle && groupSubtitle) {
+            individualSubtitle.style.opacity = '0';
+            setTimeout(() => {
+              individualSubtitle.classList.add('hidden');
+              groupSubtitle.classList.remove('hidden');
+              setTimeout(() => {
+                groupSubtitle.style.opacity = '1';
+              }, 50);
+            }, 300);
+          }
+
+          // Hide individual pricing cards with fade out
+          if (individualPricingCards && groupPricingCards) {
+            individualPricingCards.style.transition = 'all 0.5s ease-out';
+            individualPricingCards.style.opacity = '0';
+            individualPricingCards.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+              individualPricingCards.style.display = 'none';
+
+              // Show group pricing cards
+              groupPricingCards.classList.remove('hidden');
+              groupPricingCards.classList.add('grid');
+              setTimeout(() => {
+                groupPricingCards.style.opacity = '1';
+                groupPricingCards.style.transform = 'scale(1)';
+              }, 50);
+            }, 500);
+          }
+        });
+      }
+    }
+
+    // Handle individual button click
+    if (normalContainer) {
+      const normalButton = normalContainer.querySelector('.normal-button');
+      if (normalButton) {
+        normalButton.addEventListener('click', function(e) {
+          e.preventDefault();
+
+          // Switch subtitles
+          if (groupSubtitle && individualSubtitle && !groupSubtitle.classList.contains('hidden')) {
+            groupSubtitle.style.opacity = '0';
+            setTimeout(() => {
+              groupSubtitle.classList.add('hidden');
+              individualSubtitle.classList.remove('hidden');
+              setTimeout(() => {
+                individualSubtitle.style.opacity = '1';
+              }, 50);
+            }, 300);
+          }
+
+          // Hide group pricing cards if visible
+          if (groupPricingCards && !groupPricingCards.classList.contains('hidden')) {
+            groupPricingCards.style.transition = 'all 0.5s ease-out';
+            groupPricingCards.style.opacity = '0';
+            groupPricingCards.style.transform = 'scale(0.95)';
+
+            setTimeout(() => {
+              groupPricingCards.classList.add('hidden');
+              groupPricingCards.classList.remove('grid');
+
+              // Show individual pricing cards
+              if (individualPricingCards) {
+                individualPricingCards.style.display = 'grid';
+                setTimeout(() => {
+                  individualPricingCards.style.opacity = '1';
+                  individualPricingCards.style.transform = 'scale(1)';
+                }, 50);
+              }
+            }, 500);
+          }
+        });
+      }
+    }
+  });
+</script>
