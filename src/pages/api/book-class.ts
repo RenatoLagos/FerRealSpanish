@@ -16,7 +16,7 @@ const CREDENTIALS = {
 };
 
 const TEACHER_CALENDAR_ID = import.meta.env.TEACHER_CALENDAR_ID || 'primary';
-const TEACHER_TIME_ZONE = import.meta.env.TEACHER_TIME_ZONE || 'America/New_York';
+const TEACHER_TIME_ZONE = import.meta.env.TEACHER_TIME_ZONE || 'Europe/Berlin';
 
 // Clave secreta de reCAPTCHA desde variables de entorno
 const RECAPTCHA_SECRET_KEY = import.meta.env.RECAPTCHA_SECRET_KEY || "6LeIxAcTAAAAAGG-vFI1TnRWxMZNFuojJ4WifJWe"; // Fallback a clave de prueba
@@ -79,6 +79,11 @@ function createConfirmationEmailHTML(bookingData: any) {
   const formatStartTime = formatTimeInZone(classStart, timeZone, true);
   const formatEndTime = formatTimeInZone(classEnd, timeZone, true);
 
+  // Hora del profesor (Berlin) para referencia
+  const teacherStartTime = formatTimeInZone(classStart, TEACHER_TIME_ZONE, true);
+  const teacherEndTime = formatTimeInZone(classEnd, TEACHER_TIME_ZONE, true);
+  const showBothTimezones = timeZone !== TEACHER_TIME_ZONE;
+
   return `
 <!DOCTYPE html>
 <html>
@@ -138,7 +143,8 @@ function createConfirmationEmailHTML(bookingData: any) {
                 <h3 style="color: #2563eb; margin-top: 0;">📅 Class Details</h3>
                 <div class="class-details">
                     <p><span class="emoji">📅</span> <strong>Date:</strong> ${formatDate}</p>
-                    <p><span class="emoji">🕐</span> <strong>Time:</strong> ${formatStartTime} - ${formatEndTime}</p>
+                    <p><span class="emoji">🕐</span> <strong>Your Time:</strong> ${formatStartTime} - ${formatEndTime}</p>
+                    ${showBothTimezones ? `<p><span class="emoji">🌍</span> <strong>Teacher's Time:</strong> ${teacherStartTime} - ${teacherEndTime} (Berlin)</p>` : ''}
                     <p><span class="emoji">👤</span> <strong>Student:</strong> ${studentName}</p>
                     <p><span class="emoji">📚</span> <strong>Level:</strong> ${spanishLevel}</p>
                 </div>
@@ -293,6 +299,11 @@ function create24HourReminderEmailHTML(bookingData: any) {
   const formatStartTime = formatTimeInZone(classStart, timeZone, true);
   const formatEndTime = formatTimeInZone(classEnd, timeZone, true);
 
+  // Hora del profesor (Berlin) para referencia
+  const teacherStartTime = formatTimeInZone(classStart, TEACHER_TIME_ZONE, true);
+  const teacherEndTime = formatTimeInZone(classEnd, TEACHER_TIME_ZONE, true);
+  const showBothTimezones = timeZone !== TEACHER_TIME_ZONE;
+
   return `
 <!DOCTYPE html>
 <html>
@@ -326,7 +337,8 @@ function create24HourReminderEmailHTML(bookingData: any) {
             <div class="highlight-box">
                 <h3 style="color: #c2410c; margin-top: 0;">📅 Class Tomorrow</h3>
                 <p><strong>Date:</strong> ${formatDate}</p>
-                <p><strong>Time:</strong> ${formatStartTime} - ${formatEndTime}</p>
+                <p><strong>🕐 Your Time:</strong> ${formatStartTime} - ${formatEndTime}</p>
+                ${showBothTimezones ? `<p><strong>🌍 Teacher's Time:</strong> ${teacherStartTime} - ${teacherEndTime} (Berlin)</p>` : ''}
             </div>
             
             <div style="text-align: center; margin: 30px 0;">
@@ -648,11 +660,11 @@ export const POST: APIRoute = async ({ request }) => {
       `.trim(),
       start: {
         dateTime: startTime,
-        timeZone: 'America/New_York', // Ajustar según tu zona horaria
+        timeZone: TEACHER_TIME_ZONE,
       },
       end: {
         dateTime: endTime,
-        timeZone: 'America/New_York', // Ajustar según tu zona horaria
+        timeZone: TEACHER_TIME_ZONE,
       },
       // Los attendees requieren Domain-Wide Delegation - usar método alternativo
       // attendees: [

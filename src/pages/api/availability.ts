@@ -15,9 +15,46 @@ const CREDENTIALS = {
 };
 
 const TEACHER_CALENDAR_ID = import.meta.env.TEACHER_CALENDAR_ID || 'primary';
+const TEACHER_TIME_ZONE = import.meta.env.TEACHER_TIME_ZONE || 'Europe/Berlin';
 const WORK_DAY_START_HOUR = 9;
 const WORK_DAY_END_HOUR = 18;
 const SLOT_DURATION_MINUTES = 30;
+
+// Función para crear una fecha en la zona horaria del profesor
+function createDateInTeacherTimezone(year: number, month: number, day: number, hour: number, minute: number): Date {
+  // Crear un string de fecha/hora y parsearlo considerando la zona horaria del profesor
+  const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}T${String(hour).padStart(2, '0')}:${String(minute).padStart(2, '0')}:00`;
+
+  // Obtener el offset de la zona horaria del profesor para esta fecha específica
+  const tempDate = new Date(dateStr + 'Z'); // Fecha temporal en UTC
+  const formatter = new Intl.DateTimeFormat('en-US', {
+    timeZone: TEACHER_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+
+  // Calcular el offset comparando la hora UTC con la hora en la zona del profesor
+  const parts = formatter.formatToParts(tempDate);
+  const getPart = (type: string) => parts.find(p => p.type === type)?.value || '0';
+
+  const tzYear = parseInt(getPart('year'));
+  const tzMonth = parseInt(getPart('month')) - 1;
+  const tzDay = parseInt(getPart('day'));
+  const tzHour = parseInt(getPart('hour'));
+  const tzMinute = parseInt(getPart('minute'));
+
+  // Crear fecha UTC que cuando se muestre en TEACHER_TIME_ZONE sea la hora deseada
+  const targetDate = new Date(Date.UTC(year, month, day, hour, minute, 0));
+  const currentInTZ = new Date(Date.UTC(tzYear, tzMonth, tzDay, tzHour, tzMinute, 0));
+  const offsetMs = tempDate.getTime() - currentInTZ.getTime();
+
+  return new Date(targetDate.getTime() + offsetMs);
+}
 
 // Verificar si Google está configurado
 const isGoogleConfigured = () => {
@@ -124,18 +161,17 @@ export const GET: APIRoute = async ({ request }) => {
 
       const busyTimes = busyResponse.data.calendars?.[TEACHER_CALENDAR_ID]?.busy || [];
 
-      // Generar slots disponibles (9 AM a 6 PM, 30 minutos cada uno)
+      // Generar slots disponibles (9 AM a 6 PM en zona horaria del profesor, 30 minutos cada uno)
       const availableSlots = [];
-      const workDayEnd = new Date(selectedDate);
-      workDayEnd.setHours(WORK_DAY_END_HOUR, 0, 0, 0);
+      const [slotYear, slotMonth, slotDay] = date.split('-').map(num => parseInt(num));
+      const workDayEnd = createDateInTeacherTimezone(slotYear, slotMonth - 1, slotDay, WORK_DAY_END_HOUR, 0);
 
       for (let hour = WORK_DAY_START_HOUR; hour < WORK_DAY_END_HOUR; hour++) {
         for (let minute = 0; minute < 60; minute += SLOT_DURATION_MINUTES) {
-          const slotStart = new Date(selectedDate);
-          slotStart.setHours(hour, minute, 0, 0);
+          // Crear slot en la zona horaria del profesor
+          const slotStart = createDateInTeacherTimezone(slotYear, slotMonth - 1, slotDay, hour, minute);
 
-          const slotEnd = new Date(slotStart);
-          slotEnd.setMinutes(slotEnd.getMinutes() + SLOT_DURATION_MINUTES);
+          const slotEnd = new Date(slotStart.getTime() + SLOT_DURATION_MINUTES * 60 * 1000);
 
           if (slotEnd > workDayEnd) {
             continue;
@@ -203,16 +239,18 @@ export const GET: APIRoute = async ({ request }) => {
 
 function generateMockSlots(date: Date) {
   const slots = [];
-  const workDayEnd = new Date(date);
-  workDayEnd.setHours(WORK_DAY_END_HOUR, 0, 0, 0);
+  const year = date.getFullYear();
+  const month = date.getMonth();
+  const day = date.getDate();
+
+  const workDayEnd = createDateInTeacherTimezone(year, month, day, WORK_DAY_END_HOUR, 0);
 
   for (let hour = WORK_DAY_START_HOUR; hour < WORK_DAY_END_HOUR; hour++) {
     for (let minute = 0; minute < 60; minute += SLOT_DURATION_MINUTES) {
-      const slotStart = new Date(date);
-      slotStart.setHours(hour, minute, 0, 0);
+      // Crear slot en la zona horaria del profesor
+      const slotStart = createDateInTeacherTimezone(year, month, day, hour, minute);
 
-      const slotEnd = new Date(slotStart);
-      slotEnd.setMinutes(slotEnd.getMinutes() + SLOT_DURATION_MINUTES);
+      const slotEnd = new Date(slotStart.getTime() + SLOT_DURATION_MINUTES * 60 * 1000);
 
       if (slotEnd > workDayEnd) {
         continue;
@@ -225,18 +263,19 @@ function generateMockSlots(date: Date) {
       });
     }
   }
-  
+
   return slots;
 }
 
 function formatTimeSlot(start: Date, end: Date): string {
   const formatTime = (date: Date) => {
-    return date.toLocaleTimeString('en-US', { 
-      hour: 'numeric', 
+    return date.toLocaleTimeString('en-US', {
+      hour: 'numeric',
       minute: '2-digit',
-      hour12: true 
+      hour12: true,
+      timeZone: TEACHER_TIME_ZONE
     });
   };
-  
+
   return `${formatTime(start)} - ${formatTime(end)}`;
 } 
