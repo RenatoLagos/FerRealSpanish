@@ -627,36 +627,54 @@ export const POST: APIRoute = async ({ request }) => {
       ? `Your teacher will be waiting for you at: ${teacherMeetRoom}`
       : `Your teacher will create a new Meet room and share the link with you before class. You can also create one yourself at: ${instructionLink}`;
 
+    // Formatear horas para la descripción del evento
+    const classStart = new Date(startTime);
+    const classEnd = new Date(endTime);
+    const teacherStartFormatted = formatTimeInZone(classStart, TEACHER_TIME_ZONE, true);
+    const teacherEndFormatted = formatTimeInZone(classEnd, TEACHER_TIME_ZONE, true);
+    const studentStartFormatted = formatTimeInZone(classStart, studentTimeZone, true);
+    const studentEndFormatted = formatTimeInZone(classEnd, studentTimeZone, true);
+    const teacherDateFormatted = formatDateForZone(classStart, TEACHER_TIME_ZONE);
+    const studentDateFormatted = formatDateForZone(classStart, studentTimeZone);
+
     // Crear el evento con Google Meet habilitado
     const event = {
       summary: `Spanish Class - ${studentName} (${spanishLevel})`,
       description: `
 🎓 Spanish Class Booking - ${studentName}
 
-📧 STUDENT CONTACT: ${studentEmail}
-📱 PHONE: ${bookingData.studentPhone || 'Not provided'}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🌍 TIME ZONES - IMPORTANT!
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
-👤 Student Information:
+🇩🇪 TEACHER TIME (Berlin):
+   📅 ${teacherDateFormatted}
+   🕐 ${teacherStartFormatted} - ${teacherEndFormatted}
+
+👤 STUDENT TIME (${studentTimeZone}):
+   📅 ${studentDateFormatted}
+   🕐 ${studentStartFormatted} - ${studentEndFormatted}
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📧 STUDENT CONTACT
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - Name: ${studentName}
 - Email: ${studentEmail}
 - Phone: ${bookingData.studentPhone || 'Not provided'}
 - Spanish Level: ${spanishLevel}
+- Timezone: ${studentTimeZone}
 
-📅 Class Details:
-- Date: ${date}
-- Time: ${formatTime(new Date(startTime))} - ${formatTime(new Date(endTime))}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+🎥 GOOGLE MEET
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+${meetInstructions}
 
-🎯 This class was booked through FerRealSpanish website.
-
-📧 IMPORTANT: Confirmation email with Google Meet link sent to student automatically.
-
-⏰ INTELLIGENT REMINDER SYSTEM:
-- < 24 hours: Only 1 reminder (1h before class)
-- ≥ 48 hours: 2 reminders (24h before + 1h before)
-- 24-48 hours: Only 1 reminder (1h before class)
-- Teacher gets Google Calendar reminders (1h, 15min before)
-
-🎥 GOOGLE MEET INSTRUCTIONS: ${meetInstructions}
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+📋 NOTES
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+✓ Confirmation email sent to student
+✓ Reminders scheduled (24h + 1h before class)
+✓ Booked via FerRealSpanish website
       `.trim(),
       start: {
         dateTime: startTime,
