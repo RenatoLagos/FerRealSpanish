@@ -65,6 +65,61 @@ const isGoogleConfigured = () => {
   );
 };
 
+/**
+ * Obtiene la fecha/hora actual en la zona horaria del profesor.
+ * Esto es crucial para verificar fechas pasadas correctamente,
+ * independientemente de la zona horaria del servidor.
+ */
+function getNowInTeacherTimezone(): { year: number; month: number; day: number; hour: number; minute: number; date: Date } {
+  const now = new Date();
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone: TEACHER_TIME_ZONE,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    hour12: false
+  });
+
+  const parts = formatter.formatToParts(now);
+  const get = (type: string) => parseInt(parts.find(p => p.type === type)?.value || '0');
+
+  return {
+    year: get('year'),
+    month: get('month'),
+    day: get('day'),
+    hour: get('hour'),
+    minute: get('minute'),
+    date: now
+  };
+}
+
+/**
+ * Verifica si una fecha seleccionada es pasada respecto a la zona del profesor.
+ */
+function isDateInPast(year: number, month: number, day: number): boolean {
+  const teacherNow = getNowInTeacherTimezone();
+
+  // Comparar año, mes, día
+  if (year < teacherNow.year) return true;
+  if (year > teacherNow.year) return false;
+
+  if (month < teacherNow.month) return true;
+  if (month > teacherNow.month) return false;
+
+  // Mismo año y mes - comparar día (pasado significa ANTES de hoy)
+  return day < teacherNow.day;
+}
+
+/**
+ * Verifica si la fecha seleccionada es HOY en la zona del profesor.
+ */
+function isToday(year: number, month: number, day: number): boolean {
+  const teacherNow = getNowInTeacherTimezone();
+  return year === teacherNow.year && month === teacherNow.month && day === teacherNow.day;
+}
+
 export const GET: APIRoute = async ({ request }) => {
   try {
     const url = new URL(request.url);
@@ -89,12 +144,11 @@ export const GET: APIRoute = async ({ request }) => {
     // Parsear la fecha correctamente
     const [year, month, day] = date.split('-').map(num => parseInt(num));
     const selectedDate = new Date(year, month - 1, day); // month es 0-indexed
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-    
-    // Verificar que no sea un día muy pasado (permitir fechas de hoy)
-    if (selectedDate < today) {
-      return new Response(JSON.stringify({ 
+
+    // CORRECCIÓN: Usar zona horaria del profesor para verificar fechas pasadas
+    // Esto evita problemas cuando el servidor está en UTC y el profesor en otra zona
+    if (isDateInPast(year, month, day)) {
+      return new Response(JSON.stringify({
         availableSlots: [],
         message: 'No available slots for past dates',
         date
@@ -103,6 +157,9 @@ export const GET: APIRoute = async ({ request }) => {
         headers: { 'Content-Type': 'application/json' }
       });
     }
+
+    // Flag para saber si es hoy (en zona del profesor) - útil para filtrar slots pasados
+    const isTodayInTeacherZone = isToday(year, month, day);
 
     // Verificar que no sea fin de semana
     const dayOfWeek = selectedDate.getDay();
@@ -119,16 +176,16 @@ export const GET: APIRoute = async ({ request }) => {
 
     // Si Google no está configurado, devolver horarios de demostración
     if (!isGoogleConfigured()) {
-      const mockSlots = generateMockSlots(selectedDate);
-      
-      return new Response(JSON.stringify({ 
+      const mockSlots = generateMockSlots(selectedDate, isTodayInTeacherZone);
+
+      return new Response(JSON.stringify({
         availableSlots: mockSlots,
         message: 'Using demo availability (Google Calendar not configured)',
         date,
         isDemo: true
       }), {
         status: 200,
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         }
@@ -166,6 +223,11 @@ export const GET: APIRoute = async ({ request }) => {
       const [slotYear, slotMonth, slotDay] = date.split('-').map(num => parseInt(num));
       const workDayEnd = createDateInTeacherTimezone(slotYear, slotMonth - 1, slotDay, WORK_DAY_END_HOUR, 0);
 
+      // Para filtrar slots pasados cuando es hoy
+      const nowUTC = new Date();
+      // Agregar margen de 30 minutos mínimo para reservar
+      const minimumBookingTime = new Date(nowUTC.getTime() + 30 * 60 * 1000);
+
       for (let hour = WORK_DAY_START_HOUR; hour < WORK_DAY_END_HOUR; hour++) {
         for (let minute = 0; minute < 60; minute += SLOT_DURATION_MINUTES) {
           // Crear slot en la zona horaria del profesor
@@ -174,6 +236,11 @@ export const GET: APIRoute = async ({ request }) => {
           const slotEnd = new Date(slotStart.getTime() + SLOT_DURATION_MINUTES * 60 * 1000);
 
           if (slotEnd > workDayEnd) {
+            continue;
+          }
+
+          // CORRECCIÓN: Si es hoy, filtrar slots que ya pasaron o están muy próximos
+          if (isTodayInTeacherZone && slotStart <= minimumBookingTime) {
             continue;
           }
 
@@ -208,9 +275,9 @@ export const GET: APIRoute = async ({ request }) => {
       });
 
     } catch (googleError) {
-      const mockSlots = generateMockSlots(selectedDate);
-      
-      return new Response(JSON.stringify({ 
+      const mockSlots = generateMockSlots(selectedDate, isTodayInTeacherZone);
+
+      return new Response(JSON.stringify({
         availableSlots: mockSlots,
         message: 'Using demo availability due to Google Calendar error',
         date,
@@ -218,7 +285,7 @@ export const GET: APIRoute = async ({ request }) => {
         error: 'Google Calendar integration failed'
       }), {
         status: 200,
-        headers: { 
+        headers: {
           'Content-Type': 'application/json',
           'Access-Control-Allow-Origin': '*'
         }
@@ -237,13 +304,17 @@ export const GET: APIRoute = async ({ request }) => {
   }
 };
 
-function generateMockSlots(date: Date) {
+function generateMockSlots(date: Date, filterPastSlots: boolean = false) {
   const slots = [];
   const year = date.getFullYear();
   const month = date.getMonth();
   const day = date.getDate();
 
   const workDayEnd = createDateInTeacherTimezone(year, month, day, WORK_DAY_END_HOUR, 0);
+
+  // Para filtrar slots pasados cuando es hoy
+  const nowUTC = new Date();
+  const minimumBookingTime = new Date(nowUTC.getTime() + 30 * 60 * 1000);
 
   for (let hour = WORK_DAY_START_HOUR; hour < WORK_DAY_END_HOUR; hour++) {
     for (let minute = 0; minute < 60; minute += SLOT_DURATION_MINUTES) {
@@ -253,6 +324,11 @@ function generateMockSlots(date: Date) {
       const slotEnd = new Date(slotStart.getTime() + SLOT_DURATION_MINUTES * 60 * 1000);
 
       if (slotEnd > workDayEnd) {
+        continue;
+      }
+
+      // Filtrar slots pasados si es hoy
+      if (filterPastSlots && slotStart <= minimumBookingTime) {
         continue;
       }
 

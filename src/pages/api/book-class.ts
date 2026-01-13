@@ -606,6 +606,38 @@ export const POST: APIRoute = async ({ request }) => {
       });
     }
 
+    // VALIDACIÓN CRÍTICA: Verificar que el slot no haya pasado
+    // Esto previene reservas de clases que ya ocurrieron debido a race conditions
+    const slotStartDate = new Date(startTime);
+    const now = new Date();
+    const minimumLeadTime = 15 * 60 * 1000; // 15 minutos mínimo antes de la clase
+
+    if (Number.isNaN(slotStartDate.getTime())) {
+      console.error('[Booking] Invalid startTime received:', startTime);
+      return new Response(JSON.stringify({
+        error: 'Invalid time format',
+        message: 'The selected time slot is invalid. Please try again.'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
+    if (slotStartDate.getTime() <= now.getTime() + minimumLeadTime) {
+      console.warn('[Booking] Attempted to book a past or imminent slot:', {
+        startTime,
+        now: now.toISOString(),
+        difference: (slotStartDate.getTime() - now.getTime()) / 1000 / 60 + ' minutes'
+      });
+      return new Response(JSON.stringify({
+        error: 'Time slot no longer available',
+        message: 'This time slot has already passed or is too soon. Please select a different time.'
+      }), {
+        status: 400,
+        headers: { 'Content-Type': 'application/json' }
+      });
+    }
+
     // Configurar autenticación con Service Account
     const auth = new google.auth.GoogleAuth({
       credentials: CREDENTIALS,
@@ -677,11 +709,13 @@ ${meetInstructions}
 ✓ Booked via FerRealSpanish website
       `.trim(),
       start: {
-        dateTime: startTime,
+        // IMPORTANTE: Usamos formato sin offset (YYYY-MM-DDTHH:mm:ss) + timeZone
+        // Esto evita la ambigüedad de mezclar ISO con Z y timeZone diferente
+        dateTime: formatDateTimeForCalendar(startTime, TEACHER_TIME_ZONE),
         timeZone: TEACHER_TIME_ZONE,
       },
       end: {
-        dateTime: endTime,
+        dateTime: formatDateTimeForCalendar(endTime, TEACHER_TIME_ZONE),
         timeZone: TEACHER_TIME_ZONE,
       },
       // Los attendees requieren Domain-Wide Delegation - usar método alternativo
@@ -962,4 +996,51 @@ function formatTimeInZone(date: Date, timeZone: string, includeZone = false): st
 
 function formatTime(date: Date, timeZone: string = TEACHER_TIME_ZONE): string {
   return formatTimeInZone(date, timeZone);
+}
+
+/**
+ * Convierte una fecha ISO (UTC) a formato local para Google Calendar.
+ * Google Calendar espera "YYYY-MM-DDTHH:mm:ss" SIN offset cuando se especifica timeZone.
+ * Esto evita la ambigüedad de mezclar ISO con Z y un timeZone diferente.
+ *
+ * @param isoString - Fecha en formato ISO (ej: "2025-01-15T09:00:00.000Z")
+ * @param timeZone - Zona horaria destino (ej: "Europe/Berlin")
+ * @returns Fecha formateada sin offset (ej: "2025-01-15T10:00:00")
+ */
+function formatDateTimeForCalendar(isoString: string, timeZone: string): string {
+  const date = new Date(isoString);
+
+  if (Number.isNaN(date.getTime())) {
+    console.error('[Calendar] Invalid date received:', isoString);
+    throw new Error(`Invalid date format: ${isoString}`);
+  }
+
+  // Usar Intl.DateTimeFormat para obtener los componentes en la zona correcta
+  const formatter = new Intl.DateTimeFormat('en-CA', {
+    timeZone,
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false
+  });
+
+  const parts = formatter.formatToParts(date);
+  const get = (type: string) => parts.find(p => p.type === type)?.value || '00';
+
+  const year = get('year');
+  const month = get('month');
+  const day = get('day');
+  const hour = get('hour');
+  const minute = get('minute');
+  const second = get('second');
+
+  // Formato: YYYY-MM-DDTHH:mm:ss (sin Z, sin offset)
+  const result = `${year}-${month}-${day}T${hour}:${minute}:${second}`;
+
+  console.log(`[Calendar] Converted ${isoString} -> ${result} (${timeZone})`);
+
+  return result;
 }
