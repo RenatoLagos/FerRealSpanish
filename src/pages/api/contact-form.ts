@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
 import { Resend } from 'resend';
 
+import { saveContact } from '../../lib/django';
+
 // Configuración de Resend
 const resend = new Resend(import.meta.env.RESEND_API_KEY);
 const TEACHER_EMAIL = 'ferrealspanish@gmail.com'; // Email del profesor para recibir consultas
@@ -266,6 +268,9 @@ export const POST: APIRoute = async ({ request }) => {
         subject: 'Thanks for contacting us - FerRealSpanish',
         html: createConfirmationEmailHTML(formData),
       });
+
+      // Django: Guardar el contacto en la base de datos
+      await saveContact({ firstName, lastName, email, message });
 
       console.log('✅ Confirmation email sent:', confirmationEmailResult);
 

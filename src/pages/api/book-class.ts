@@ -1,6 +1,8 @@
 import type { APIRoute } from 'astro';
-import { google } from 'googleapis';
+import { google } from 'googleapis';  
 import { Resend } from 'resend';
+
+import { saveBooking } from 'src/lib/django';
 
 // Configuración del Service Account (mismo que availability.ts)
 const CREDENTIALS = {
@@ -32,6 +34,7 @@ interface BookingData {
   studentEmail: string;
   studentPhone?: string;
   spanishLevel: string;
+  lessonType: string;
   courseType: string;
   studentTimeZone?: string;
   'g-recaptcha-response'?: string;
@@ -547,14 +550,7 @@ async function sendReminderEmail(reminderData: any, options: { sendAt?: Date } =
     console.error(`[Reminder] Error handling ${reminderData.reminderType} reminder:`, error);
     return false;
   }
-}
-
-
-
-
-
-
-
+  }
 export const POST: APIRoute = async ({ request }) => {
   try {
     const bookingData: BookingData = await request.json();
@@ -584,13 +580,13 @@ export const POST: APIRoute = async ({ request }) => {
     }
     
     // Validar datos requeridos
-    const { date, startTime, endTime, studentName, studentEmail, spanishLevel, courseType } = bookingData;
+    const { date, startTime, endTime, studentName, studentEmail, spanishLevel, lessonType, courseType } = bookingData;
     const studentTimeZone = resolveTimeZone(bookingData.studentTimeZone);
     
-    if (!date || !startTime || !endTime || !studentName || !studentEmail || !spanishLevel || !courseType) {
-      return new Response(JSON.stringify({ 
+    if (!date || !startTime || !endTime || !studentName || !studentEmail || !spanishLevel || !lessonType || !courseType) {
+      return new Response(JSON.stringify({
         error: 'Missing required fields',
-        required: ['date', 'startTime', 'endTime', 'studentName', 'studentEmail', 'spanishLevel', 'courseType']
+        required: ['date', 'startTime', 'endTime', 'studentName', 'studentEmail', 'spanishLevel', 'lessonType', 'courseType']
       }), {
         status: 400,
         headers: { 'Content-Type': 'application/json' }
@@ -757,6 +753,9 @@ ${meetInstructions}
     });
 
     const createdEvent = response.data;
+
+    // Django: Guardar la reserva en la base de datos
+    await saveBooking({ date, startTime, endTime, studentName, studentEmail, spanishLevel, lessonType, studentTimeZone });
 
     // Enviar correo de confirmación al estudiante
     try {
