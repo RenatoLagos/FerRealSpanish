@@ -6,7 +6,6 @@ interface ProgramCard {
   price: number;
   currency: string;
   classes: number;
-  description: string;
   image: string;
   alt: string;
   buttonText: string;
@@ -18,10 +17,9 @@ interface ProgramCard {
 const programCards: ProgramCard[] = [
   {
     title: "Beginners",
-    price: 336,
+    price: 348,
     currency: "USD",
     classes: 12,
-    description: "Perfect for those starting their Spanish journey. I'll guide you through fundamentals with patience and personalized attention.",
     image: "/program-1.webp",
     alt: "Beginners",
     buttonText: "Join Waitlist",
@@ -31,10 +29,9 @@ const programCards: ProgramCard[] = [
   },
   {
     title: "Ready to Travel",
-    price: 336,
+    price: 348,
     currency: "USD",
     classes: 12,
-    description: "Essential phrases and cultural tips for your upcoming trip. I'll prepare you for real-world travel situations.",
     image: "/program-5.jpg",
     alt: "Ready to Travel",
     buttonText: "Learn More",
@@ -43,10 +40,9 @@ const programCards: ProgramCard[] = [
   },
   {
     title: "Real Talk",
-    price: 336,
+    price: 348,
     currency: "USD",
     classes: 12,
-    description: "Authentic conversations and everyday expressions. I'll teach you how Spanish speakers really talk in daily life.",
     image: "/program-4.avif",
     alt: "Real Talk",
     buttonText: "Learn More",
@@ -55,10 +51,9 @@ const programCards: ProgramCard[] = [
   },
   {
     title: "Cultural Immersion",
-    price: 336,
+    price: 348,
     currency: "USD",
     classes: 12,
-    description: "Dive deep into Latin American culture while learning Spanish. I'll share traditions, customs, and cultural insights.",
     image: "/program-3.webp",
     alt: "Cultural Immersion",
     buttonText: "Learn More",
@@ -79,27 +74,27 @@ const programCards: ProgramCard[] = [
         <div class="grid grid-cols-1 gap-8">
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
                 {programCards.map((card) => (
-                    <div class="p-3.5 bg-white rounded-2xl shadow-[6px_6px_0px_0px_#000000] border-4 border-gray-200 overflow-hidden transform transition hover:-translate-y-0.5 flex flex-col h-[480px]">
-                        
-                        <!-- Image Section - Fixed Height -->
+                    <div class="p-3.5 bg-white rounded-2xl shadow-[6px_6px_0px_0px_#000000] border-4 border-gray-200 overflow-hidden transform transition hover:-translate-y-0.5 flex flex-col">
+
+                        <!-- Image Section -->
                         <div class="p-0.5 h-[140px] flex-shrink-0">
-                            <img 
-                                src={card.image} 
-                                alt={card.alt} 
+                            <img
+                                src={card.image}
+                                alt={card.alt}
                                 class="w-full h-full object-cover rounded-t-2xl"
                             />
                         </div>
-                        
-                        <!-- Content Section - Flexible -->
-                        <div class="px-3.5 pt-4 pb-4 flex flex-col h-full">
-                            
-                            <!-- Title Section - Fixed Height -->
-                            <div class="h-[32px] flex items-center mb-3 flex-shrink-0">
+
+                        <!-- Content Section -->
+                        <div class="px-3.5 pt-4 pb-4 flex flex-col">
+
+                            <!-- Title Section -->
+                            <div class="flex items-center mb-3">
                                 <h3 class="text-lg font-bold text-gray-900">{card.title}</h3>
                             </div>
-                            
-                            <!-- Pricing Section - Fixed Height -->
-                            <div class="h-[44px] mb-4 flex-shrink-0">
+
+                            <!-- Pricing Section -->
+                            <div class="mb-4">
                                 <div class="text-lg font-bold text-gray-900 leading-tight">
                                     ${card.price} <span class="text-sm font-normal">{card.currency}</span>
                                 </div>
@@ -107,18 +102,13 @@ const programCards: ProgramCard[] = [
                                     {card.classes} classes
                                 </div>
                             </div>
-                            
-                            <!-- Description Section - Takes remaining space -->
-                            <div class="flex-grow mb-4 flex items-start">
-                                <p class="text-gray-600 text-xs leading-relaxed">{card.description}</p>
-                            </div>
-                            
-                            <!-- Button Section - Always at bottom -->
-                            <div class="flex justify-end items-end mt-auto pt-2">
-                                <Button 
+
+                            <!-- Button Section -->
+                            <div class="flex justify-end items-end pt-2">
+                                <Button
                                     href={card.buttonHref}
                                     variant={card.buttonVariant}
-                                    size="sm" 
+                                    size="sm"
                                     textSize="xs"
                                     rounded={true}
                                     shadow={card.shadow}
@@ -126,7 +116,7 @@ const programCards: ProgramCard[] = [
                                     {card.buttonText}
                                 </Button>
                             </div>
-                            
+
                         </div>
                     </div>
                 ))}
