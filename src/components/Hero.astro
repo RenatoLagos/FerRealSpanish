@@ -6,10 +6,14 @@ interface Props {
   subtitle?: string;
 }
 
-const { 
-  title = "Learn Spanish,", 
+const {
+  title = "Learn Spanish,",
   subtitle = "I help you learn Spanish authentically through personalized classes, conversation practice with a native speaker, and complete immersion. My approach helps you develop fluency while exploring travel tips, local expressions, and much more."
 } = Astro.props;
+
+// Dynamic button text based on class availability
+const classesAvailable = import.meta.env.CLASSES_AVAILABLE === 'true';
+const ctaButtonText = classesAvailable ? "Book a Class" : "Join the Waitlist";
 ---
 
 <section class="relative py-24 md:py-36 bg-[var(--background-primary)]">
@@ -46,9 +50,9 @@ const {
             shadow={true}
           >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-7 h-7 mr-3">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+              <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
             </svg>
-            Join the Waitlist
+            {ctaButtonText}
           </Button>
         </div>
       </div>

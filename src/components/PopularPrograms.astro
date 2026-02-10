@@ -1,6 +1,10 @@
 ---
 import Button from '../components/ui/button.astro';
 
+// Dynamic button text based on class availability
+const classesAvailable = import.meta.env.CLASSES_AVAILABLE === 'true';
+const ctaButtonText = classesAvailable ? "Book Now" : "Join Waitlist";
+
 interface ProgramCard {
   title: string;
   price: number;
@@ -22,7 +26,7 @@ const programCards: ProgramCard[] = [
     classes: 12,
     image: "/program-1.webp",
     alt: "Beginners",
-    buttonText: "Join Waitlist",
+    buttonText: ctaButtonText,
     buttonVariant: "primary",
     buttonHref: "/schedule-class",
     shadow: true

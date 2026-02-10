@@ -374,12 +374,12 @@ const pageKeywords = classesAvailable
   )}
 </Layout>
 
-{classesAvailable ? (
+{classesAvailable && (
   <!-- ==================== BOOKING SCRIPT ==================== -->
-  <script>
+  <script is:inline>
     // Calendar state variables
-    let selectedTimeSlot: any = null;
-    let selectedDate: string | null = null;
+    let selectedTimeSlot = null;
+    let selectedDate = null;
 
     const timeFormatter = new Intl.DateTimeFormat(undefined, {
       hour: 'numeric',
@@ -391,7 +391,7 @@ const pageKeywords = classesAvailable
       timeZoneName: 'short'
     });
 
-    function formatLocalTimeRange(startISO: string, endISO: string): string {
+    function formatLocalTimeRange(startISO, endISO) {
       const startDate = new Date(startISO);
       const endDate = new Date(endISO);
 
@@ -466,7 +466,7 @@ const pageKeywords = classesAvailable
 
       // Validate email format
       function validateEmail() {
-        const emailInput = document.getElementById('studentEmail') as HTMLInputElement;
+        const emailInput = document.getElementById('studentEmail');
         const emailError = document.getElementById('emailError');
 
         if (!emailInput || !emailError) return true;
@@ -492,7 +492,7 @@ const pageKeywords = classesAvailable
 
         if (!captchaError) return false;
 
-        const recaptchaResponse = (window as any).grecaptcha?.getResponse();
+        const recaptchaResponse = window.grecaptcha?.getResponse();
 
         if (!recaptchaResponse || recaptchaResponse.length === 0) {
           captchaError.textContent = 'Please complete the reCAPTCHA verification.';
@@ -505,7 +505,7 @@ const pageKeywords = classesAvailable
       }
 
       // Show success modal
-      function showSuccessModal(bookingData: any) {
+      function showSuccessModal(bookingData) {
         const modal = document.getElementById('successModal');
         const modalDate = document.getElementById('modalDate');
         const modalTime = document.getElementById('modalTime');
@@ -547,7 +547,7 @@ const pageKeywords = classesAvailable
       }
 
       // Render calendar
-      function renderCalendar(month: number, year: number) {
+      function renderCalendar(month, year) {
         const monthNames = ["January", "February", "March", "April", "May", "June",
           "July", "August", "September", "October", "November", "December"];
 
@@ -596,13 +596,14 @@ const pageKeywords = classesAvailable
         for (let day = 1; day <= lastDate; day++) {
           const isToday = day === todayDate && month === todayMonth && year === todayYear;
           const isPast = new Date(year, month, day) <= new Date(todayYear, todayMonth, todayDate);
-          const isWeekend = new Date(year, month, day).getDay() === 0 || new Date(year, month, day).getDay() === 6;
+          const dayOfWeek = new Date(year, month, day).getDay();
+          const isAllowedDay = [1, 2, 3].includes(dayOfWeek); // Monday, Tuesday, Wednesday only
 
           if (isPast || isToday) {
             calendarHTML += `<div class="h-8 p-1">
               <div class="h-full flex items-center justify-center text-gray-300 text-sm">${day}</div>
             </div>`;
-          } else if (isWeekend) {
+          } else if (!isAllowedDay) {
             calendarHTML += `<div class="h-8 p-1">
               <div class="h-full flex items-center justify-center text-gray-400 text-sm">${day}</div>
             </div>`;
@@ -647,7 +648,7 @@ const pageKeywords = classesAvailable
                 b.classList.add('hover:bg-gray-100');
               });
 
-              const target = e.target as HTMLElement;
+              const target = e.target;
               target.classList.add('bg-[#7dd3c0]', 'text-white');
               target.classList.remove('hover:bg-gray-100');
 
@@ -661,7 +662,7 @@ const pageKeywords = classesAvailable
       }
 
       // Select a date and load available time slots
-      async function selectDate(dateStr: string) {
+      async function selectDate(dateStr) {
         selectedDate = dateStr;
 
         // Remove pulse animation once date is selected
@@ -670,7 +671,7 @@ const pageKeywords = classesAvailable
         if (selectedDateEl) {
           const [year, month, day] = dateStr.split('-');
           const date = new Date(parseInt(year), parseInt(month) - 1, parseInt(day));
-          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' } as const;
+          const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
           const formattedDate = date.toLocaleDateString('en-US', options);
           selectedDateEl.textContent = formattedDate;
         }
@@ -679,7 +680,7 @@ const pageKeywords = classesAvailable
       }
 
       // Load available time slots from backend API
-      async function loadAvailableTimeSlots(dateStr: string) {
+      async function loadAvailableTimeSlots(dateStr) {
         if (!timeSlotsEl || !loadingEl) return;
 
         // Show loading
@@ -698,7 +699,7 @@ const pageKeywords = classesAvailable
 
           if (availableSlots.length > 0) {
             let slotsHTML = '';
-            availableSlots.forEach((slot: any) => {
+            availableSlots.forEach((slot) => {
               const baseClasses = "p-3 rounded-md text-center text-sm cursor-pointer transition-colors time-btn";
               const stateClasses = "border border-gray-200 hover:bg-gray-50 text-gray-700";
               const localDisplayTime = formatLocalTimeRange(slot.startTime, slot.endTime) || slot.displayTime;
@@ -713,14 +714,14 @@ const pageKeywords = classesAvailable
             timeSlotsEl.innerHTML = slotsHTML;
 
             // Add time slot selection listeners
-            document.querySelectorAll<HTMLElement>('.time-btn').forEach(btn => {
+            document.querySelectorAll('.time-btn').forEach(btn => {
               btn.addEventListener('click', (event) => {
-                document.querySelectorAll<HTMLElement>('.time-btn').forEach(button => {
+                document.querySelectorAll('.time-btn').forEach(button => {
                   button.classList.remove('bg-[#7dd3c0]', 'text-white');
                   button.classList.add('border', 'border-gray-200', 'hover:bg-gray-50', 'text-gray-700');
                 });
 
-                const buttonEl = event.currentTarget as HTMLElement;
+                const buttonEl = event.currentTarget;
                 buttonEl.classList.add('bg-[#7dd3c0]', 'text-white');
                 buttonEl.classList.remove('border', 'border-gray-200', 'hover:bg-gray-50', 'text-gray-700');
 
@@ -773,10 +774,10 @@ const pageKeywords = classesAvailable
       async function handleBookingConfirmation() {
         if (!selectedTimeSlot) return;
 
-        const studentName = (document.getElementById('studentName') as HTMLInputElement)?.value;
-        const studentEmail = (document.getElementById('studentEmail') as HTMLInputElement)?.value;
-        const spanishLevel = (document.getElementById('spanishLevel') as HTMLSelectElement)?.value;
-        const lessonType = (document.querySelector('input[name="lessonType"]:checked') as HTMLInputElement)?.value || 'individual';
+        const studentName = document.getElementById('studentName')?.value;
+        const studentEmail = document.getElementById('studentEmail')?.value;
+        const spanishLevel = document.getElementById('spanishLevel')?.value;
+        const lessonType = document.querySelector('input[name="lessonType"]:checked')?.value || 'individual';
         const courseType = 'conversational';
 
         // Validate all required fields
@@ -799,7 +800,7 @@ const pageKeywords = classesAvailable
           // Show loading state
           if (confirmBookingEl) confirmBookingEl.textContent = 'Creating booking...';
 
-          const recaptchaResponse = (window as any).grecaptcha?.getResponse();
+          const recaptchaResponse = window.grecaptcha?.getResponse();
 
           // Send booking request to our backend API
           const timezoneInfo = Intl.DateTimeFormat().resolvedOptions();
@@ -836,7 +837,7 @@ const pageKeywords = classesAvailable
             throw new Error(result.message || 'Booking failed');
           }
 
-        } catch (error: any) {
+        } catch (error) {
           console.error('Booking error:', error);
           alert(error.message || 'There was an error creating your booking. Please try again or contact us directly.');
           if (confirmBookingEl) confirmBookingEl.textContent = 'Book This Class';
@@ -852,13 +853,13 @@ const pageKeywords = classesAvailable
 
         // Clear form fields
         ['studentName', 'studentEmail'].forEach(id => {
-          const element = document.getElementById(id) as HTMLInputElement;
+          const element = document.getElementById(id);
           if (element) element.value = '';
         });
 
         // Reset reCAPTCHA
-        if ((window as any).grecaptcha) {
-          (window as any).grecaptcha.reset();
+        if (window.grecaptcha) {
+          window.grecaptcha.reset();
         }
 
         // Clear validation errors
@@ -880,7 +881,7 @@ const pageKeywords = classesAvailable
     });
   </script>
 
-  <style>
+  <style is:inline>
     .calendar-container {
       user-select: none;
     }
@@ -901,16 +902,18 @@ const pageKeywords = classesAvailable
       border-radius: 0.5rem;
     }
   </style>
-) : (
+)}
+
+{!classesAvailable && (
   <!-- ==================== WAITLIST SCRIPT ==================== -->
-  <script>
+  <script is:inline>
     document.addEventListener('DOMContentLoaded', () => {
-      const form = document.getElementById('waitlistForm') as HTMLFormElement;
+      const form = document.getElementById('waitlistForm');
       const submitText = document.getElementById('waitlistSubmitText');
 
       // Email validation
-      function validateEmail(): boolean {
-        const emailInput = document.getElementById('waitlistEmail') as HTMLInputElement;
+      function validateEmail() {
+        const emailInput = document.getElementById('waitlistEmail');
         const emailError = document.getElementById('waitlistEmailError');
 
         if (!emailInput || !emailError) return true;
@@ -931,12 +934,12 @@ const pageKeywords = classesAvailable
       }
 
       // Validate reCAPTCHA
-      function validateCaptcha(): boolean {
+      function validateCaptcha() {
         const captchaError = document.getElementById('waitlistCaptchaError');
 
         if (!captchaError) return false;
 
-        const recaptchaResponse = (window as any).grecaptcha?.getResponse();
+        const recaptchaResponse = window.grecaptcha?.getResponse();
 
         if (!recaptchaResponse || recaptchaResponse.length === 0) {
           captchaError.textContent = 'Please complete the reCAPTCHA verification.';
@@ -949,7 +952,7 @@ const pageKeywords = classesAvailable
       }
 
       // Show success modal
-      function showSuccessModal(data: { name: string; email: string; level: string }) {
+      function showSuccessModal(data) {
         const modal = document.getElementById('waitlistSuccessModal');
         const modalName = document.getElementById('waitlistModalName');
         const modalEmail = document.getElementById('waitlistModalEmail');
@@ -974,8 +977,8 @@ const pageKeywords = classesAvailable
 
           // Reset form
           form.reset();
-          if ((window as any).grecaptcha) {
-            (window as any).grecaptcha.reset();
+          if (window.grecaptcha) {
+            window.grecaptcha.reset();
           }
 
           // Redirect to home after a short delay
@@ -995,11 +998,11 @@ const pageKeywords = classesAvailable
         // Validate captcha
         if (!validateCaptcha()) return;
 
-        const studentName = (document.getElementById('waitlistName') as HTMLInputElement)?.value.trim();
-        const studentEmail = (document.getElementById('waitlistEmail') as HTMLInputElement)?.value.trim();
-        const spanishLevel = (document.getElementById('waitlistLevel') as HTMLSelectElement)?.value;
-        const message = (document.getElementById('waitlistMessage') as HTMLTextAreaElement)?.value.trim();
-        const recaptchaResponse = (window as any).grecaptcha?.getResponse();
+        const studentName = document.getElementById('waitlistName')?.value.trim();
+        const studentEmail = document.getElementById('waitlistEmail')?.value.trim();
+        const spanishLevel = document.getElementById('waitlistLevel')?.value;
+        const message = document.getElementById('waitlistMessage')?.value.trim();
+        const recaptchaResponse = window.grecaptcha?.getResponse();
 
         // Show loading state
         if (submitText) submitText.textContent = 'Joining waitlist...';
@@ -1030,7 +1033,7 @@ const pageKeywords = classesAvailable
           } else {
             throw new Error(result.message || 'Failed to join waitlist');
           }
-        } catch (error: any) {
+        } catch (error) {
           console.error('Waitlist error:', error);
           alert(error.message || 'There was an error. Please try again.');
           if (submitText) submitText.textContent = 'Join the Waitlist';

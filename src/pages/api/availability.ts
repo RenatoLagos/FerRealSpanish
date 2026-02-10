@@ -16,8 +16,8 @@ const CREDENTIALS = {
 
 const TEACHER_CALENDAR_ID = import.meta.env.TEACHER_CALENDAR_ID || 'primary';
 const TEACHER_TIME_ZONE = import.meta.env.TEACHER_TIME_ZONE || 'Europe/Berlin';
-const WORK_DAY_START_HOUR = 9;
-const WORK_DAY_END_HOUR = 18;
+const WORK_DAY_START_HOUR = 13;  // 1 PM Berlin time
+const WORK_DAY_END_HOUR = 19;   // 7 PM Berlin time
 const SLOT_DURATION_MINUTES = 30;
 
 // Función para crear una fecha en la zona horaria del profesor
@@ -161,12 +161,13 @@ export const GET: APIRoute = async ({ request }) => {
     // Flag para saber si es hoy (en zona del profesor) - útil para filtrar slots pasados
     const isTodayInTeacherZone = isToday(year, month, day);
 
-    // Verificar que no sea fin de semana
+    // Solo permitir clases Lunes (1), Martes (2) y Miércoles (3)
     const dayOfWeek = selectedDate.getDay();
-    if (dayOfWeek === 0 || dayOfWeek === 6) {
-      return new Response(JSON.stringify({ 
+    const allowedDays = [1, 2, 3]; // Monday, Tuesday, Wednesday
+    if (!allowedDays.includes(dayOfWeek)) {
+      return new Response(JSON.stringify({
         availableSlots: [],
-        message: 'No classes available on weekends',
+        message: 'Classes only available on Monday, Tuesday, and Wednesday',
         date
       }), {
         status: 200,
@@ -218,7 +219,7 @@ export const GET: APIRoute = async ({ request }) => {
 
       const busyTimes = busyResponse.data.calendars?.[TEACHER_CALENDAR_ID]?.busy || [];
 
-      // Generar slots disponibles (9 AM a 6 PM en zona horaria del profesor, 30 minutos cada uno)
+      // Generar slots disponibles (1 PM a 7 PM en zona horaria del profesor, 30 minutos cada uno)
       const availableSlots = [];
       const [slotYear, slotMonth, slotDay] = date.split('-').map(num => parseInt(num));
       const workDayEnd = createDateInTeacherTimezone(slotYear, slotMonth - 1, slotDay, WORK_DAY_END_HOUR, 0);

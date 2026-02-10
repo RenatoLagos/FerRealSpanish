@@ -3,6 +3,10 @@ import Button from './ui/button.astro';
 
 // Clave de sitio de reCAPTCHA desde variables de entorno
 const siteKey = import.meta.env.RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"; // Fallback a clave de prueba
+
+// Dynamic button text based on class availability
+const classesAvailable = import.meta.env.CLASSES_AVAILABLE === 'true';
+const ctaButtonText = classesAvailable ? "Book a Class" : "Join the Waitlist";
 ---
 
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
@@ -49,7 +53,7 @@ const siteKey = import.meta.env.RECAPTCHA_SITE_KEY || "6LeIxAcTAAAAAJcZVRqyHh71U
             shadow={true}
             href="/schedule-class"
           >
-            Join the Waitlist
+            {ctaButtonText}
           </Button>
         </div>
       </div>

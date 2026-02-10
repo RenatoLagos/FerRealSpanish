@@ -1,6 +1,10 @@
 ---
 import Button from './ui/button.astro';
 
+// Dynamic button text based on class availability
+const classesAvailable = import.meta.env.CLASSES_AVAILABLE === 'true';
+const ctaButtonText = classesAvailable ? "Book Now" : "Join Waitlist";
+
 interface PricingPlan {
   name: string;
   price: number;
@@ -9,7 +13,6 @@ interface PricingPlan {
   pricePerClass: number;
   popular?: boolean;
   features: string[];
-  buttonText: string;
   buttonVariant: 'primary' | 'secondary';
 }
 
@@ -28,7 +31,6 @@ const pricingPlans: PricingPlan[] = [
       "WhatsApp support",
       "Flexible scheduling"
     ],
-    buttonText: "Join Waitlist",
     buttonVariant: "secondary"
   },
   {
@@ -46,7 +48,6 @@ const pricingPlans: PricingPlan[] = [
       "WhatsApp support",
       "Flexible scheduling"
     ],
-    buttonText: "Join Waitlist",
     buttonVariant: "primary"
   },
   {
@@ -64,7 +65,6 @@ const pricingPlans: PricingPlan[] = [
       "WhatsApp support",
       "Custom learning plan"
     ],
-    buttonText: "Join Waitlist",
     buttonVariant: "secondary"
   }
 ];
@@ -84,7 +84,6 @@ const groupPricingPlans: PricingPlan[] = [
       "WhatsApp support",
       "Flexible scheduling"
     ],
-    buttonText: "Join Waitlist",
     buttonVariant: "secondary"
   },
   {
@@ -102,7 +101,6 @@ const groupPricingPlans: PricingPlan[] = [
       "WhatsApp support",
       "Flexible scheduling"
     ],
-    buttonText: "Join Waitlist",
     buttonVariant: "primary"
   },
   {
@@ -120,7 +118,6 @@ const groupPricingPlans: PricingPlan[] = [
       "WhatsApp support",
       "Custom learning plan"
     ],
-    buttonText: "Join Waitlist",
     buttonVariant: "secondary"
   }
 ];
@@ -236,7 +233,7 @@ const groupPricingPlans: PricingPlan[] = [
           </ul>
           
           <div class="mt-auto">
-            <Button 
+            <Button
               variant={plan.buttonVariant}
               size="md"
               fullWidth={true}
@@ -244,7 +241,7 @@ const groupPricingPlans: PricingPlan[] = [
               shadow={plan.popular}
               href="/schedule-class"
             >
-              {plan.buttonText}
+              {ctaButtonText}
             </Button>
           </div>
         </div>
@@ -307,7 +304,7 @@ const groupPricingPlans: PricingPlan[] = [
               shadow={plan.popular}
               href="/schedule-class"
             >
-              {plan.buttonText}
+              {ctaButtonText}
             </Button>
           </div>
         </div>
