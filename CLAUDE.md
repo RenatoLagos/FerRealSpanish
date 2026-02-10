@@ -103,7 +103,7 @@ All API routes follow Astro's APIRoute pattern and return JSON responses with ap
 
 **Page Components** (src/pages/)
 - index.astro - Landing page
-- schedule-class.astro - Class booking interface with calendar
+- schedule-class.astro - Class booking/waitlist page (toggleable via `CLASSES_AVAILABLE` env var)
 - contact.astro - Contact form
 - about.astro - About page
 - sitemap.xml.ts - Dynamic XML sitemap generation
@@ -150,6 +150,11 @@ Required environment variables (stored in .env, not committed):
 **Security**:
 - `RECAPTCHA_SECRET_KEY`
 - `RECAPTCHA_SITE_KEY` (used in frontend)
+
+**Booking/Waitlist Toggle**:
+- `CLASSES_AVAILABLE` - Set to `'true'` to show booking calendar, or `'false'`/unset to show waitlist form
+  - When `true`: Shows calendar with time slot selection and booking form
+  - When `false` or not set: Shows waitlist signup form ("Classes Are Full!")
 
 **Development Notes**:
 - APIs gracefully degrade when credentials are missing (demo mode for availability.ts and contact-form.ts)
